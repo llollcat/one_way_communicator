@@ -1,43 +1,29 @@
-//
-// Created by tiramisu on 19.10.2023.
-//
-
 #ifndef UNTITLED_SENDER_H
 #define UNTITLED_SENDER_H
 
 #include <bits/stdc++.h>
 #include <winsock2.h>
 #include <ws2tcpip.h>
-
-using namespace std;
+#include "FrameData.h"
 
 
 class Sender {
 protected:
-    int BUFLEN;
     const char *SERVER;
     unsigned int PORT;
-    SOCKET client_socket;
-    sockaddr_in server;
+    SOCKET client_socket{};
+    sockaddr_in server{};
 
-public:
-
-    Sender(const int BUFLEN, const char *SERVER, const unsigned int PORT) {
-        this->BUFLEN = BUFLEN;
-        this->SERVER = SERVER;
-        this->PORT = PORT;
-    }
-
-    int initConnection(){
+    int initConnection() {
 
         // initialise winsock
         WSADATA ws;
-        cout << "Initialising Winsock..." << endl;
+        std::cout << "Initialising Winsock..." << std::endl;
         if (WSAStartup(MAKEWORD(2, 2), &ws) != 0) {
-            cerr << "Failed. Error Code: " << WSAGetLastError() << endl;
+            std::cerr << "Failed. Error Code: " << WSAGetLastError() << std::endl;
             return 1;
         }
-        cout << "Initialised." << endl;
+        std::cout << "Initialised." << std::endl;
 
         // create socket
 
@@ -48,10 +34,10 @@ public:
         setsockopt(client_socket, IPPROTO_UDP, UDP_NOCHECKSUM, (const char *) &optValue2, sizeof(optValue2));
         if (client_socket == SOCKET_ERROR) // <<< UDP socket
         {
-            cerr << "socket() failed with error code: " << WSAGetLastError() << endl;
+            std::cerr << "socket() failed with error code: " << WSAGetLastError() << std::endl;
             return 2;
         }
-        cout << "Socket created." << endl;
+        std::cout << "Socket created." << std::endl;
 
 
         // setup address structure
@@ -60,25 +46,27 @@ public:
         this->server.sin_port = htons(PORT);
         this->server.sin_addr.S_un.S_addr = inet_addr(SERVER);
 
-
-
-
     }
 
-    int sendFrameData( FrameData& frameData) {
 
-        // start communication
+public:
+
+    Sender(const char *SERVER, const unsigned int PORT) {
+        this->SERVER = SERVER;
+        this->PORT = PORT;
+        this->initConnection();
+    }
 
 
+    int sendFrameData(FrameData &frameData) {
 
-        if (sendto(this->client_socket, reinterpret_cast<char*>(frameData.getuCharData()), frameData.getSize(), 0, (sockaddr *) &this->server, sizeof(sockaddr_in)) ==
-            SOCKET_ERROR) {
-            cerr << "sendto() failed with error code: " << WSAGetLastError();
+
+        if (sendto(this->client_socket, reinterpret_cast<char *>(frameData.getUCharData()), frameData.getSize(), 0,
+                   (sockaddr *) &this->server, sizeof(sockaddr_in)) == SOCKET_ERROR) {
+            std::cerr << "sendto() failed with error code: " << WSAGetLastError();
             return 3;
         }
-        cout << "Frame send" << endl;
-
-
+        std::cout << "Frame send" << std::endl;
 
 
     }
@@ -92,4 +80,4 @@ public:
 };
 
 
-#endif //UNTITLED_SENDER_H
+#endif

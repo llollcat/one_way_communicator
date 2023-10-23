@@ -1,7 +1,3 @@
-//
-// Created by tiramisu on 19.10.2023.
-//
-
 #ifndef UNTITLED1_RECEIVER_H
 #define UNTITLED1_RECEIVER_H
 
@@ -10,7 +6,6 @@
 #include <ws2tcpip.h>
 #include "FrameData.h"
 
-using namespace std;
 
 class Receiver {
 protected:
@@ -29,12 +24,12 @@ public:
 
         // initialise winsock
         WSADATA ws;
-        cout << "Initialising Winsock..." << endl;
+        std::cout << "Initialising Winsock..." << std::endl;
         if (WSAStartup(MAKEWORD(2, 2), &ws) != 0) {
-            cerr << "Failed. Error Code: " << WSAGetLastError() << endl;
+            std::cerr << "Failed. Error Code: " << WSAGetLastError() << std::endl;
             return -1;
         }
-        cout << "Initialised." << endl;
+        std::cout << "Initialised." << std::endl;
 
         // create a socket
         auto server_socket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
@@ -44,10 +39,10 @@ public:
         setsockopt(server_socket, IPPROTO_UDP, UDP_NOCHECKSUM, (const char *) &optValue2, sizeof(optValue2));
 
         if (server_socket == INVALID_SOCKET) {
-            cerr << "socket() failed with error code: " << WSAGetLastError() << endl;
+            std::cerr << "socket() failed with error code: " << WSAGetLastError() << std::endl;
             return -2;
         }
-        cout << "Socket created." << endl;
+        std::cout << "Socket created." << std::endl;
 
         // prepare the sockaddr_in structure
         sockaddr_in server{};
@@ -58,10 +53,10 @@ public:
 
         // bind
         if (bind(server_socket, (sockaddr *) &server, sizeof(server)) == SOCKET_ERROR) {
-            cerr << "Bind failed with error code: " << WSAGetLastError();
+            std::cerr << "Bind failed with error code: " << WSAGetLastError();
             return -3;
         }
-        cout << "Bind done." << endl;
+        std::cout << "Bind done." << std::endl;
 
 
         sockaddr_in client{};
@@ -70,14 +65,14 @@ public:
         bool is_having_control_frame = false;
         int slen = sizeof(sockaddr_in);
 
-        unsigned char *message = new unsigned char[BUFLEN];
-        map<unsigned int, FrameData *> frameDataMap;
+        auto *message = new unsigned char[BUFLEN];
+        std::map<unsigned int, FrameData *> frameDataMap;
         while (true) {
-            cout << "Waiting for data..." << endl;
+            std::cout << "Waiting for mp_data..." << std::endl;
 
-            // try to receive some data, this is a blocking call
+            // try to receive some mp_data, this is a blocking call
             if (recvfrom(server_socket, reinterpret_cast<char*>(message), BUFLEN, 0, (sockaddr *) &client, &slen) == SOCKET_ERROR) {
-                cerr << "recvfrom() failed with error code: " << WSAGetLastError();
+                std::cerr << "recvfrom() failed with error code: " << WSAGetLastError();
                 return -4;
             }
 
@@ -94,13 +89,13 @@ public:
 
 
         }
-        ofstream myfile;
+        std::ofstream myfile;
         myfile.open(output_filename, std::ios::binary);
         for (auto item = ++frameDataMap.begin(); item != frameDataMap.end(); ++item) {
-            myfile.write(reinterpret_cast<char*>(item->second->getuCharData())+4, item->second->getSize()-36);
+            myfile.write(reinterpret_cast<char*>(item->second->getUCharData()) + 4, item->second->getSize() - 36);
 
 
-            cout << endl;
+            std::cout << std::endl;
         }
         myfile.close();
 
@@ -116,4 +111,4 @@ public:
 };
 
 
-#endif //UNTITLED1_RECEIVER_H
+#endif
