@@ -1,27 +1,30 @@
-#ifndef UNTITLED1_RECEIVER_H
-#define UNTITLED1_RECEIVER_H
+#ifndef ONE_WAY_COMMUNICATOR_RECEIVER_H
+#define ONE_WAY_COMMUNICATOR_RECEIVER_H
 
-#include <bits/stdc++.h>
 #include <winsock2.h>
 #include <ws2tcpip.h>
+#include "iostream"
+#include "map"
+#include <fstream>
+
 #include "FrameData.h"
 
 
 class Receiver {
-protected:
-    int BUFLEN;
+private:
+    int FRAME_SIZE;
+    int FILE_FRAME_SIZE;
     unsigned int PORT;
 public:
 
-    Receiver(const int BUFLEN, const unsigned int PORT) {
-        this->BUFLEN = BUFLEN;
+    Receiver(const int FILE_FRAME_SIZE, const unsigned int PORT) {
+        this->FILE_FRAME_SIZE = FILE_FRAME_SIZE;
+        this->FRAME_SIZE = FILE_FRAME_SIZE + 4;
 
         this->PORT = PORT;
     }
 
-    int getFile(const char *output_filename) {
-
-
+    int getFile(const char *output_filename) const {
         // initialise winsock
         WSADATA ws;
         std::cout << "Initialising Winsock..." << std::endl;
@@ -63,51 +66,45 @@ public:
 
 
         bool is_having_control_frame = false;
-        int slen = sizeof(sockaddr_in);
+        int sockaddr_len = sizeof(sockaddr_in);
 
-        auto *message = new unsigned char[BUFLEN];
+        auto *message = new unsigned char[FRAME_SIZE];
         std::map<unsigned int, FrameData *> frameDataMap;
+        std::cout << "Receiving started" << std::endl;
         while (true) {
-            std::cout << "Waiting for mp_data..." << std::endl;
-
-            // try to receive some mp_data, this is a blocking call
-            if (recvfrom(server_socket, reinterpret_cast<char*>(message), BUFLEN, 0, (sockaddr *) &client, &slen) == SOCKET_ERROR) {
+            // try to receive some data, this is a blocking call
+            if (recvfrom(server_socket, reinterpret_cast<char *>(message), FRAME_SIZE, 0, (sockaddr *) &client,
+                         &sockaddr_len) == SOCKET_ERROR) {
                 std::cerr << "recvfrom() failed with error code: " << WSAGetLastError();
                 return -4;
             }
 
 
-            auto *frameData = new FrameData(message, BUFLEN);
+            auto *frameData = new FrameData(message, FRAME_SIZE);
             frameDataMap[frameData->getFrameNumber()] = frameData;
             is_having_control_frame |= frameData->getFrameNumber() == 0;
 
 
-
-
             if (is_having_control_frame && frameDataMap.size() >= frameDataMap[0]->getFrameAmount())
                 break;
-
-
         }
-        std::ofstream myfile;
-        myfile.open(output_filename, std::ios::binary);
+
+        std::ofstream output_file;
+        output_file.open(output_filename, std::ios::binary);
         for (auto item = ++frameDataMap.begin(); item != frameDataMap.end(); ++item) {
-            myfile.write(reinterpret_cast<char*>(item->second->getUCharData()) + 4, item->second->getSize() - 36);
+            output_file.write(reinterpret_cast<char *>(item->second->getUCharData()) + 4, FILE_FRAME_SIZE);
 
-
-            std::cout << std::endl;
         }
-        myfile.close();
+        output_file.close();
 
         delete[] message;
 
         closesocket(server_socket);
         WSACleanup();
 
-
+        std::cout << "Done!" << std::endl;
+        return 0;
     };
-
-
 };
 
 
