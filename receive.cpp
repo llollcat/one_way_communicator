@@ -2,6 +2,7 @@
 #include "ArgumentsGetter.h"
 
 
+
 int main(int argc, char *argv[]) {
     ArgumentsGetter input(argc, argv);
 
@@ -25,3 +26,6 @@ int main(int argc, char *argv[]) {
 
     return 0;
 }
+
+
+

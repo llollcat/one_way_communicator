@@ -1,11 +1,11 @@
 
 #include "Sender.h"
-#include "FrameData.h"
 #include "ArgumentsGetter.h"
 #include <fstream>
-#include <chrono>
-#include <thread>
 #include "iostream"
+#include "CommonFrame.h"
+#include "ControlFrame.h"
+
 
 int main(int argc, char *argv[]) {
     ArgumentsGetter input(argc, argv);
@@ -23,34 +23,31 @@ int main(int argc, char *argv[]) {
     auto server = input.getCmdOption("-server").c_str();
     int port = stoi(input.getCmdOption("-port"));
     auto filename = input.getCmdOption("-file").c_str();
-    int file_frame_size = stoi(input.getCmdOption("-file-frame-size"));  //  real size of frame is FILE_FRAME_SIZE+4
+    int file_frame_size = stoi(input.getCmdOption("-file-frame-size"));
 
 
-
-
-    std::ifstream in_file(filename, std::ios::binary);
+    std::ifstream in_file(filename, std::ios::binary | std::ios::ate);
     if (!in_file.is_open()) {
         std::cerr << "failed to open ";
         return -1;
     }
 
-    in_file.seekg(0, std::ios::end);
-
     Sender sender = Sender(server, port);
-    FrameData control_frameData = FrameData(in_file.tellg() / file_frame_size + 2, file_frame_size);
+    auto controlFrameData = ControlFrame(in_file.tellg() / file_frame_size + 1, filename, strlen(filename));
     in_file.seekg(0, std::ios::beg);
 
 
-    sender.sendFrameData(control_frameData);
+    sender.sendData(controlFrameData.getData(), controlFrameData.getDataSize());
 
 
     char *message = new char [file_frame_size];
     for (int frame_num = 1; in_file.peek() != EOF; ++frame_num) {
         in_file.read(message, file_frame_size);
-        FrameData frameData = FrameData(frame_num, message, file_frame_size);
-        sender.sendFrameData(frameData);
+        auto commonFrame = CommonFrame(frame_num, message, file_frame_size);
+        sender.sendData(commonFrame.getData(), commonFrame.getDataSize());
     }
     delete[] message;
 
     return 0;
 }
+

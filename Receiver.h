@@ -1,13 +1,17 @@
 #ifndef ONE_WAY_COMMUNICATOR_RECEIVER_H
 #define ONE_WAY_COMMUNICATOR_RECEIVER_H
 
+
+#ifdef _WIN32
+
 #include <winsock2.h>
 #include <ws2tcpip.h>
 #include "iostream"
 #include "map"
 #include <fstream>
 
-#include "FrameData.h"
+#include "CommonFrame.h"
+#include "ControlFrame.h"
 
 
 class Receiver {
@@ -18,8 +22,9 @@ private:
 public:
 
     Receiver(const int FILE_FRAME_SIZE, const unsigned int PORT) {
+        //todo изменить на динамический размер
         this->FILE_FRAME_SIZE = FILE_FRAME_SIZE;
-        this->FRAME_SIZE = FILE_FRAME_SIZE + 4;
+        this->FRAME_SIZE = FILE_FRAME_SIZE + 2048;
 
         this->PORT = PORT;
     }
@@ -65,11 +70,11 @@ public:
         sockaddr_in client{};
 
 
-        bool is_having_control_frame = false;
         int sockaddr_len = sizeof(sockaddr_in);
 
         auto *message = new unsigned char[FRAME_SIZE];
-        std::map<unsigned int, FrameData *> frameDataMap;
+        std::map<unsigned int, CommonFrame*> commonFrameMap;
+        ControlFrame *controlFrame = nullptr;
         std::cout << "Receiving started" << std::endl;
         while (true) {
             // try to receive some data, this is a blocking call
@@ -79,20 +84,24 @@ public:
                 return -4;
             }
 
+            if (Frame::isControlFrame(message)){
+                controlFrame = new ControlFrame(message);
+            }else {
+                auto *commonFrame = new CommonFrame(message);
+                commonFrameMap[commonFrame->getFrameNumber()] = commonFrame;
+            }
 
-            auto *frameData = new FrameData(message, FRAME_SIZE);
-            frameDataMap[frameData->getFrameNumber()] = frameData;
-            is_having_control_frame |= frameData->getFrameNumber() == 0;
 
-
-            if (is_having_control_frame && frameDataMap.size() >= frameDataMap[0]->getFrameAmount())
+            if (controlFrame != nullptr && commonFrameMap.size() >= controlFrame->getCommonFrameAmount())
                 break;
+
+
         }
 
         std::ofstream output_file;
         output_file.open(output_filename, std::ios::binary);
-        for (auto item = ++frameDataMap.begin(); item != frameDataMap.end(); ++item) {
-            output_file.write(reinterpret_cast<char *>(item->second->getUCharData()) + 4, FILE_FRAME_SIZE);
+        for (auto item :commonFrameMap) {
+            output_file.write(reinterpret_cast<char *>(item.second->getData()+ item.second->getAdditionalMemberSize()) , FILE_FRAME_SIZE);
 
         }
         output_file.close();
@@ -106,6 +115,11 @@ public:
         return 0;
     };
 };
+
+#else
+
+
+#endif
 
 
 #endif

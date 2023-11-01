@@ -1,11 +1,15 @@
 #ifndef ONE_WAY_COMMUNICATOR_SENDER_H
 #define ONE_WAY_COMMUNICATOR_SENDER_H
 
+
+#ifdef _WIN32
+
 #include <winsock2.h>
 #include <ws2tcpip.h>
 #include "iostream"
 
-#include "FrameData.h"
+#include "Frame.h"
+#include "CommonFrame.h"
 
 
 class Sender {
@@ -51,8 +55,8 @@ public:
     }
 
 
-    int sendFrameData(FrameData &frameData) {
-        if (sendto(this->client_socket, reinterpret_cast<char *>(frameData.getUCharData()), frameData.getSize(), 0,
+    int sendData(unsigned char *data, int size) {
+        if (sendto(this->client_socket, reinterpret_cast<char *>(data), size, 0,
                    (sockaddr *) &this->server, sizeof(sockaddr_in)) == SOCKET_ERROR) {
             std::cerr << "sendto() failed with error code: " << WSAGetLastError();
             return -3;
@@ -68,5 +72,9 @@ public:
     }
 };
 
+#else
+
+
+#endif
 
 #endif
