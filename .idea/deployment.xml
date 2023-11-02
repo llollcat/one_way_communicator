@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="PublishConfigData" remoteFilesAllowedToDisappearOnAutoupload="false">
+    <serverData>
+      <paths name="Remote Host (40f93704-d868-40c4-aa33-5d96ca600cff)">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/tmp/tmp.dY8cvZo4tK" local="$PROJECT_DIR$" />
+          </mappings>
+          <excludedPaths>
+            <excludedPath local="true" path="$PROJECT_DIR$/cmake-build-rhdebug" />
+            <excludedPath local="true" path="$PROJECT_DIR$/cmake-build-windebug" />
+            <excludedPath local="true" path="$PROJECT_DIR$/cmake-build-windebug" />
+            <excludedPath local="true" path="$PROJECT_DIR$/cmake-build-debug" />
+            <excludedPath local="true" path="$PROJECT_DIR$/cmake-build-debug" />
+            <excludedPath local="true" path="$PROJECT_DIR$/cmake-build-release" />
+            <excludedPath local="true" path="$PROJECT_DIR$/cmake-build-release" />
+            <excludedPath local="true" path="$PROJECT_DIR$/cmake-build-rhdebug" />
+            <excludedPath local="true" path="$PROJECT_DIR$/cmake-build-rhrelease" />
+            <excludedPath local="true" path="$PROJECT_DIR$/cmake-build-winrelease" />
+            <excludedPath local="true" path="$PROJECT_DIR$/cmake-build-winrelease" />
+            <excludedPath local="true" path="$PROJECT_DIR$/cmake-build-rhrelease" />
+          </excludedPaths>
+        </serverdata>
+      </paths>
+    </serverData>
+  </component>
+</project>

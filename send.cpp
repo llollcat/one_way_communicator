@@ -31,21 +31,33 @@ int main(int argc, char *argv[]) {
         std::cerr << "failed to open ";
         return -1;
     }
-
-    Sender sender = Sender(server, port);
-    auto controlFrameData = ControlFrame(in_file.tellg() / file_frame_size + 1, filename, strlen(filename));
+    long long file_size = in_file.tellg();
     in_file.seekg(0, std::ios::beg);
+
+    long long  common_frame_number = (file_size / file_frame_size) + bool(file_size % file_frame_size);
+    Sender sender = Sender(server, port);
+    auto controlFrameData = ControlFrame(common_frame_number, filename, strlen(filename));
+
 
 
     sender.sendData(controlFrameData.getData(), controlFrameData.getDataSize());
 
 
     char *message = new char [file_frame_size];
-    for (int frame_num = 1; in_file.peek() != EOF; ++frame_num) {
+    for (int frame_count = 1; in_file.peek() != EOF; ++frame_count) {
         in_file.read(message, file_frame_size);
-        auto commonFrame = CommonFrame(frame_num, message, file_frame_size);
-        sender.sendData(commonFrame.getData(), commonFrame.getDataSize());
+        CommonFrame *commonFrame;
+        if (frame_count == common_frame_number && file_size % file_frame_size !=0) {
+            commonFrame = new CommonFrame(frame_count, message, (file_size % file_frame_size));
+        } else{
+            commonFrame = new CommonFrame(frame_count, message, file_frame_size);
+
+        }
+
+        sender.sendData(commonFrame->getData(), commonFrame->getDataSize());
+        delete commonFrame;
     }
+
     delete[] message;
 
     return 0;

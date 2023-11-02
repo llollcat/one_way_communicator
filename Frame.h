@@ -7,6 +7,10 @@ protected:
     unsigned char *mp_data; // contains all data for transferring
     int mp_data_size; // size with service data. example: frame_number, single_frame_len
 
+    // on adding new member change it
+    const int FRAME_ADDITIONAL_MEMBER_SIZE= sizeof(mp_data_size);
+
+
     static void insertUInt(unsigned int ui_number, unsigned char *p_dest) {
         for (int i = 3; i >= 0; --i) {
             p_dest[i] = char(ui_number);
@@ -43,6 +47,10 @@ public:
         return mp_data_size;
     }
 
+    ~Frame() {
+        delete[] this->mp_data;
+
+    }
 
 };
 

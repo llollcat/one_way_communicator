@@ -15,7 +15,7 @@ private:
 
 
     // on adding new member change it
-    const int ADDITIONAL_MEMBER_SIZE = sizeof(unsigned int) + sizeof(mp_data_size) + sizeof(m_common_frame_amount);
+    const int ADDITIONAL_MEMBER_SIZE = FRAME_ADDITIONAL_MEMBER_SIZE + sizeof(unsigned int) + sizeof(m_common_frame_amount);
 
 
 public:
@@ -55,10 +55,7 @@ public:
 
 
 
-    ~ControlFrame() {
-        delete[] this->mp_data;
 
-    }
 };
 
 

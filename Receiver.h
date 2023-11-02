@@ -101,7 +101,7 @@ public:
         std::ofstream output_file;
         output_file.open(output_filename, std::ios::binary);
         for (auto item :commonFrameMap) {
-            output_file.write(reinterpret_cast<char *>(item.second->getData()+ item.second->getAdditionalMemberSize()) , FILE_FRAME_SIZE);
+            output_file.write(reinterpret_cast<char *>(item.second->getData()+ item.second->getAdditionalMemberSize()) , item.second->getDataSize()-item.second->getAdditionalMemberSize());
 
         }
         output_file.close();
