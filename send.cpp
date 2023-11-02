@@ -1,4 +1,3 @@
-
 #include "Sender.h"
 #include "ArgumentsGetter.h"
 #include <fstream>
@@ -39,7 +38,6 @@ int main(int argc, char *argv[]) {
     auto controlFrameData = ControlFrame(common_frame_number, filename, strlen(filename));
 
 
-
     sender.sendData(controlFrameData.getData(), controlFrameData.getDataSize());
 
 
@@ -51,7 +49,6 @@ int main(int argc, char *argv[]) {
             commonFrame = new CommonFrame(frame_count, message, (file_size % file_frame_size));
         } else{
             commonFrame = new CommonFrame(frame_count, message, file_frame_size);
-
         }
 
         sender.sendData(commonFrame->getData(), commonFrame->getDataSize());

@@ -74,6 +74,77 @@ public:
 
 #else
 
+#include <bits/stdc++.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <arpa/inet.h>
+#include <netinet/in.h>
+
+
+
+
+#include "iostream"
+
+#include "CommonFrame.h"
+
+
+class Sender {
+private:
+    const char *SERVER;
+    unsigned int PORT;
+    struct sockaddr_in servaddr{};
+    int sockfd{};
+    int initConnection(){
+        if ((sockfd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) < 0 ) {
+            perror("socket creation failed");
+            exit(EXIT_FAILURE);
+        }
+
+
+        // Filling server information
+        servaddr.sin_family = AF_INET;
+        servaddr.sin_port = htons(PORT);
+        servaddr.sin_addr.s_addr = inet_addr(SERVER);
+
+        return 0;
+    }
+
+
+public:
+    Sender(const char *server, const unsigned int port) {
+        this->SERVER = server;
+        this->PORT = port;
+        memset(&servaddr, 0, sizeof(servaddr));
+        this->initConnection();
+    }
+
+
+    int sendData(unsigned char *data, int size) {
+
+
+        sendto(sockfd, data, size,
+               0, (const struct sockaddr *) &servaddr,
+               sizeof(servaddr));
+        std::cout<<"Frame sent."<<std::endl;
+
+
+        return 0;
+    }
+
+    virtual ~Sender() {
+        close(sockfd);
+    }
+};
+
+
+
+
+
+
+
 
 #endif
 

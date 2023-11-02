@@ -22,7 +22,6 @@ private:
 public:
 
     Receiver(const int FILE_FRAME_SIZE, const unsigned int PORT) {
-        //todo изменить на динамический размер
         this->FILE_FRAME_SIZE = FILE_FRAME_SIZE;
         this->FRAME_SIZE = FILE_FRAME_SIZE + 2048;
 
@@ -118,6 +117,127 @@ public:
 
 #else
 
+
+
+#include <bits/stdc++.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <arpa/inet.h>
+#include <netinet/in.h>
+
+#include "CommonFrame.h"
+#include "ControlFrame.h"
+
+
+class Receiver {
+private:
+    int FRAME_SIZE;
+    int FILE_FRAME_SIZE;
+    unsigned int PORT;
+public:
+
+    Receiver(const int FILE_FRAME_SIZE, const unsigned int PORT) {
+        this->FILE_FRAME_SIZE = FILE_FRAME_SIZE;
+        this->FRAME_SIZE = FILE_FRAME_SIZE + 2048;
+
+        this->PORT = PORT;
+    }
+
+
+    int hui(){
+
+
+
+
+
+
+    }
+
+
+
+    int getFile(const char *output_filename) const {
+        int sockfd;
+        const char *hello = "Hello from server";
+        struct sockaddr_in servaddr, cliaddr;
+
+        // Creating socket file descriptor
+        if ( (sockfd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) < 0 ) {
+            std::cerr << ("socket creation failed") << std::endl;
+            return -1;
+        }
+
+        memset(&servaddr, 0, sizeof(servaddr));
+        memset(&cliaddr, 0, sizeof(cliaddr));
+
+        // Filling server information
+        servaddr.sin_family    = AF_INET; // IPv4
+        servaddr.sin_addr.s_addr = INADDR_ANY;
+        servaddr.sin_port = htons(PORT);
+
+        if ( bind(sockfd, (const struct sockaddr *)&servaddr, sizeof(servaddr)) < 0 ){
+
+            std::cerr << ("bind failed") << std::endl;
+            return -2;
+        }
+
+        socklen_t len= sizeof(cliaddr);;
+
+
+        ////
+
+        int sockaddr_len = sizeof(sockaddr_in);
+
+        auto *message = new unsigned char[FRAME_SIZE];
+        std::map<unsigned int, CommonFrame*> commonFrameMap;
+        ControlFrame *controlFrame = nullptr;
+        std::cout << "Receiving started" << std::endl;
+        while (true) {
+            // try to receive some data, this is a blocking call
+            recvfrom(sockfd, (char *)message, FRAME_SIZE,
+                         0, ( struct sockaddr *) &cliaddr,
+                         &len);
+
+            if (Frame::isControlFrame(message)){
+                controlFrame = new ControlFrame(message);
+            }else {
+                auto *commonFrame = new CommonFrame(message);
+                commonFrameMap[commonFrame->getFrameNumber()] = commonFrame;
+            }
+
+
+            if (controlFrame != nullptr && commonFrameMap.size() >= controlFrame->getCommonFrameAmount())
+                break;
+
+
+        }
+
+        std::ofstream output_file;
+        output_file.open(output_filename, std::ios::binary);
+        for (auto item :commonFrameMap) {
+            output_file.write(reinterpret_cast<char *>(item.second->getData()+ item.second->getAdditionalMemberSize()) , item.second->getDataSize()-item.second->getAdditionalMemberSize());
+
+        }
+        output_file.close();
+
+        delete[] message;
+
+
+        std::cout << "Done!" << std::endl;
+        return 0;
+
+
+
+
+
+
+
+
+
+    };
+};
 
 #endif
 
