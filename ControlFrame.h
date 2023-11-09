@@ -8,14 +8,15 @@
 
 #include "Frame.h"
 
-class ControlFrame final : public  Frame {
+class ControlFrame final : public Frame {
 
 private:
     unsigned int m_common_frame_amount;
 
 
     // on adding new member change it
-    const int ADDITIONAL_MEMBER_SIZE = FRAME_ADDITIONAL_MEMBER_SIZE + sizeof(unsigned int) + sizeof(m_common_frame_amount);
+    const int ADDITIONAL_MEMBER_SIZE =
+            FRAME_ADDITIONAL_MEMBER_SIZE + sizeof(unsigned int) + sizeof(m_common_frame_amount);
 
 
 public:
@@ -45,15 +46,13 @@ public:
     }
 
 
-
-
-
-
     [[nodiscard]] unsigned int getCommonFrameAmount() const {
         return this->m_common_frame_amount;
     }
 
-
+    [[nodiscard]] int getAdditionalMemberSize() const {
+        return ADDITIONAL_MEMBER_SIZE;
+    }
 
 
 };

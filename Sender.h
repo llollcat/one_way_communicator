@@ -8,8 +8,7 @@
 #include <ws2tcpip.h>
 #include "iostream"
 
-#include "Frame.h"
-#include "CommonFrame.h"
+
 
 
 class Sender {
@@ -85,10 +84,9 @@ public:
 
 
 
-
 #include "iostream"
 
-#include "CommonFrame.h"
+
 
 
 class Sender {
