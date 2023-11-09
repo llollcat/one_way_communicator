@@ -7,7 +7,7 @@ protected:
     unsigned char *mp_data; // contains all data for transferring
     int mp_data_size; // size with service data. example: frame_number, single_frame_len
 
-    // on adding new member change it
+    //! on adding new member change it
     const int FRAME_ADDITIONAL_MEMBER_SIZE= sizeof(mp_data_size);
 
 
@@ -29,7 +29,25 @@ protected:
         return out | p_source[3];
 
     }
-    Frame(){}
+
+    static void insertULongLong(unsigned long long ull_number, unsigned char *p_dest) {
+        for (int i = 7; i >= 0; --i) {
+            p_dest[i] = char(ull_number);
+            ull_number >>= 8;
+        }
+    }
+
+    static unsigned int ULongLong(const unsigned char *p_source) {
+        unsigned long long out = 0;
+
+        for (int i = 0; i < 7; ++i) {
+            out = out | p_source[i];
+            out <<= 8;
+
+        }
+        return out | p_source[7];
+
+    }
 
 
 public:

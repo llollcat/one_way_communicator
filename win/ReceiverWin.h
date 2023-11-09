@@ -15,8 +15,8 @@
 
 class Receiver : public AbstractBaseReceiver {
 protected:
-    int sockaddr_len;
-    SOCKET server_socket;
+    int sockaddr_len{};
+    SOCKET server_socket{};
     sockaddr_in client{};
 
     int init() override {

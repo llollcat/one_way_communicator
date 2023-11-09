@@ -14,7 +14,7 @@ private:
     unsigned int m_common_frame_amount;
 
 
-    // on adding new member change it
+    //! on adding new member change it
     const int ADDITIONAL_MEMBER_SIZE =
             FRAME_ADDITIONAL_MEMBER_SIZE + sizeof(unsigned int) + sizeof(m_common_frame_amount);
 
