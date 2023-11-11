@@ -6,9 +6,9 @@ class Frame {
 protected:
     unsigned char *mp_data; // contains all data for transferring
     int mp_data_size; // size with service data. example: frame_number, single_frame_len
-
+    unsigned long long file_id;
     //! on adding new member change it
-    const int FRAME_ADDITIONAL_MEMBER_SIZE= sizeof(mp_data_size);
+    const int FRAME_ADDITIONAL_MEMBER_SIZE= sizeof(file_id) + sizeof(mp_data_size);
 
 
     static void insertUInt(unsigned int ui_number, unsigned char *p_dest) {
@@ -37,7 +37,7 @@ protected:
         }
     }
 
-    static unsigned int ULongLong(const unsigned char *p_source) {
+    static unsigned int getULongLong(const unsigned char *p_source) {
         unsigned long long out = 0;
 
         for (int i = 0; i < 7; ++i) {
@@ -64,10 +64,14 @@ public:
     [[nodiscard]] int getDataSize() const {
         return mp_data_size;
     }
-
+    //todo ad virtual
     ~Frame() {
         delete[] this->mp_data;
 
+    }
+
+    [[nodiscard]] unsigned long long int getFileId() const {
+        return file_id;
     }
 
 };

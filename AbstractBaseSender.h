@@ -24,8 +24,6 @@ public:
 
         send(data, size);
 
-        std::cout << "Frame sent" << std::endl;
-
         return 0;
     };
 
