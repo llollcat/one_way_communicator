@@ -32,10 +32,20 @@ public:
     }
 
     // if doen not exist out error
-    const std::string &getCmdOptionSafely(const std::string &option) {
+    [[nodiscard]] const std::string &getCmdOptionSafely(const std::string &option) const {
         if (!isCmdOptionExists(option)) {
             std::cout << option << " - not given. -h for help and example" << std::endl;
             exit(-1);
+
+        }
+        return getCmdOption(option);
+
+    }
+
+
+    [[nodiscard]] const std::string &getCmdOptionIfGiven(const std::string &option, const std::string &default_value) const {
+        if (!isCmdOptionExists(option)) {
+            return default_value;
 
         }
         return getCmdOption(option);

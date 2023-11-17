@@ -7,13 +7,20 @@
 #include <string>
 #include <filesystem>
 
+#define D_PORT "8888"
+#define D_FILE_FRAME_SIZE "512"
+//todo add ctrl + c handler
+
+
+
 int main(int argc, char *argv[]) {
     ArgumentsGetter input(argc, argv);
 
     if (input.isCmdOptionExists("-h")) {
 
         std::cout << "Program is send selected file to selected server by UDP.\n"
-                     "Arguments: -server, -port, -file, -file-frame-size\n"
+                     "Required arguments: -server, -file or -dir, \n"
+                     "Optional arguments: -port, -file-frame-size\n"
                      "Example: -server 127.0.0.1 -port 8888 -file s.txt -file-frame-size 512\n"
                      "Example: -server 127.0.0.1 -port 8888 -dir /some/dir/with/files -file-frame-size 512"
                   << std::endl;
@@ -21,13 +28,11 @@ int main(int argc, char *argv[]) {
     }
 
     auto server = input.getCmdOptionSafely("-server").c_str();
-    int port = stoi(input.getCmdOptionSafely("-port"));
-    int file_frame_size = stoi(input.getCmdOptionSafely("-file-frame-size"));
+    int port = stoi(input.getCmdOptionIfGiven("-port", D_PORT));
+    int file_frame_size = stoi(input.getCmdOptionIfGiven("-file-frame-size", D_FILE_FRAME_SIZE));
 
 
-
-
-    auto sendFile = [&](unsigned long long t_file_id,const char *filename_name, const char *filename_path) {
+    auto sendFile = [&](unsigned long long t_file_id, const char *filename_name, const char *filename_path) {
 
         std::ifstream in_file(filename_path, std::ios::binary | std::ios::ate);
         if (!in_file.is_open()) {
@@ -69,22 +74,19 @@ int main(int argc, char *argv[]) {
     if (input.isCmdOptionExists("-file")) {
         const char *filename = input.getCmdOption("-file").c_str();
         return sendFile(0ull, filename, filename);
-    }else if (input.isCmdOptionExists("-dir")) {
-        std::string path = input.getCmdOption("-dir");
+    } else {
+        std::string path = input.getCmdOptionSafely("-dir");
         unsigned long long file_id = 1;
-        for (const auto & entry : std::filesystem::directory_iterator(path)){
-             sendFile(file_id,reinterpret_cast<const char *>(entry.path().filename().string().c_str()),
-             reinterpret_cast<const char *>(entry.path().string().c_str()));
+        for (const auto &entry: std::filesystem::directory_iterator(path)) {
+            sendFile(file_id, reinterpret_cast<const char *>(entry.path().filename().string().c_str()),
+                     reinterpret_cast<const char *>(entry.path().string().c_str()));
         }
 
 
         return 0;
 
-    } else{
-        std::cout << "check args" << std::endl;
-        return -1;
-    }
 
+    }
 
 }
 

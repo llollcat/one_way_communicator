@@ -33,4 +33,4 @@ public:
 };
 
 
-#endif //ONE_WAY_COMMUNICATOR_ABSTRACTBASESENDER_H
+#endif

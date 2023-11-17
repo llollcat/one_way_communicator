@@ -1,7 +1,3 @@
-//
-// Created by tiramisu on 02.11.2023.
-//
-
 #ifndef ONE_WAY_COMMUNICATOR_ABSTRACTBASERECEIVER_H
 #define ONE_WAY_COMMUNICATOR_ABSTRACTBASERECEIVER_H
 
@@ -16,8 +12,7 @@
 
 class AbstractBaseReceiver {
 protected:
-    int FRAME_SIZE{2048};
-    int FILE_FRAME_SIZE;
+    int m_frame_size;
     unsigned int PORT;
 
     virtual int init() = 0;
@@ -42,21 +37,21 @@ protected:
 
 public:
 
-    AbstractBaseReceiver(int fileFrameSize, unsigned int port) : FILE_FRAME_SIZE(fileFrameSize), PORT(port) {}
+    AbstractBaseReceiver(int fileFrameSize, unsigned int port) : m_frame_size(fileFrameSize), PORT(port) {}
 
 
     int getFile(const char *filename) {
 
         this->init();
 
-        auto *message = new unsigned char[FRAME_SIZE];
+        auto *message = new unsigned char[m_frame_size];
         std::map<unsigned int, ControlFrame *> controlFrameMap;
         std::map<unsigned int, std::map<unsigned int, CommonFrame *>> commonFrameMap;
         std::cout << "Receiving started" << std::endl;
         while (true) {
             // try to receive some data, this is a blocking call
 
-            if (this->receive(message, FRAME_SIZE) != 0) {
+            if (this->receive(message, m_frame_size) != 0) {
                 return -4;
             }
 
