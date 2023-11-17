@@ -37,7 +37,7 @@ protected:
         output_file.close();
         std::cout << "Done!" << std::endl;
 
-
+        return 0;
     }
 
 public:
@@ -46,6 +46,7 @@ public:
 
 
     int getFile(const char *filename) {
+
         this->init();
 
         auto *message = new unsigned char[FRAME_SIZE];

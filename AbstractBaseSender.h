@@ -20,6 +20,7 @@ public:
         if (!is_init) {
             init();
             is_init = true;
+
         }
 
         send(data, size);

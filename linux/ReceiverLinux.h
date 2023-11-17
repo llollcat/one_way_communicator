@@ -3,9 +3,9 @@
 
 
 #include <bits/stdc++.h>
-#include <stdlib.h>
+#include <cstdlib>
 #include <unistd.h>
-#include <string.h>
+#include <cstring>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
@@ -50,7 +50,6 @@ protected:
 
         socklen_t len = sizeof(cliaddr);
 
-        int sockaddr_len = sizeof(sockaddr_in);
         // try to receive some data, this is a blocking call
         recvfrom(sockfd, (char *) message, buffer_size,
                  0, (struct sockaddr *) &cliaddr,

@@ -2,9 +2,9 @@
 #define ONE_WAY_COMMUNICATOR_SENDERLINUX_H
 
 
-#include <stdlib.h>
+#include <cstdlib>
 #include <unistd.h>
-#include <string.h>
+#include <cstring>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
@@ -24,7 +24,6 @@ private:
             perror("socket creation failed");
             exit(EXIT_FAILURE);
         }
-
         // Filling server information
         servaddr.sin_family = AF_INET;
         servaddr.sin_port = htons(PORT);
@@ -34,9 +33,14 @@ private:
     }
 
     int send(unsigned char *message, int message_size) override {
+
+
         sendto(sockfd, message, message_size,
                0, (const struct sockaddr *) &servaddr,
                sizeof(servaddr));
+
+
+        return 0;
 
     }
 
