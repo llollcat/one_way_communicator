@@ -39,6 +39,7 @@ int main(int argc, char *argv[]) {
             std::cerr << "failed to open ";
             return -1;
         }
+
         long long file_size = in_file.tellg();
         in_file.seekg(0, std::ios::beg);
 
