@@ -6,12 +6,17 @@
 #include "ControlFrame.h"
 #include <string>
 #include <filesystem>
+#include <csignal>
+
 
 #define D_PORT "8888"
 #define D_FILE_FRAME_SIZE "512"
-//todo add ctrl + c handler
 
 
+namespace {
+    std::function<void(int)> shutdown_handler;
+    void signal_handler(int signal) { shutdown_handler(signal); }
+}
 
 int main(int argc, char *argv[]) {
     ArgumentsGetter input(argc, argv);
@@ -32,7 +37,15 @@ int main(int argc, char *argv[]) {
     int file_frame_size = stoi(input.getCmdOptionIfGiven("-file-frame-size", D_FILE_FRAME_SIZE));
 
 
-    auto sendFile = [&](unsigned long long t_file_id, const char *filename_name, const char *filename_path) {
+    bool is_working = true;
+    shutdown_handler = [&is_working](int signal) -> void{
+        is_working = false;
+    };
+
+    std::signal(SIGINT, signal_handler);
+
+    auto sendFile = [&file_frame_size, &server, &port, &is_working]
+            (unsigned long long t_file_id, const char *filename_name, const char *filename_path) {
 
         std::ifstream in_file(filename_path, std::ios::binary | std::ios::ate);
         if (!in_file.is_open()) {
@@ -52,7 +65,7 @@ int main(int argc, char *argv[]) {
 
 
         char *message = new char[file_frame_size];
-        for (int frame_count = 1; in_file.peek() != EOF; ++frame_count) {
+        for (int frame_count = 1; in_file.peek() != EOF || is_working; ++frame_count) {
             in_file.read(message, file_frame_size);
             CommonFrame *commonFrame;
             if (frame_count == common_frame_number && file_size % file_frame_size != 0) {

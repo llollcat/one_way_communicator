@@ -13,6 +13,7 @@
 class AbstractBaseReceiver {
 protected:
     int m_frame_size;
+    volatile bool m_is_working = true;
     unsigned int PORT;
 
     virtual int init() = 0;
@@ -20,6 +21,8 @@ protected:
     virtual int receive(unsigned char *message, int buffer_size) = 0;
 
     virtual int closeConnection() = 0;
+
+
 
 
     static int writeToFile(char *output_filename, const std::map<unsigned int, CommonFrame *> &commonFrameMap) {
@@ -39,16 +42,21 @@ public:
 
     AbstractBaseReceiver(int fileFrameSize, unsigned int port) : m_frame_size(fileFrameSize), PORT(port) {}
 
+    virtual void stopReceivingSignal(){
+        this->m_is_working = false;
+    }
 
     int getFile(const char *filename) {
-
+        if (!this->m_is_working) {
+            return -5;
+        }
         this->init();
 
         auto *message = new unsigned char[m_frame_size];
         std::map<unsigned int, ControlFrame *> controlFrameMap;
         std::map<unsigned int, std::map<unsigned int, CommonFrame *>> commonFrameMap;
         std::cout << "Receiving started" << std::endl;
-        while (true) {
+        while (this->m_is_working) {
             // try to receive some data, this is a blocking call
 
             if (this->receive(message, m_frame_size) != 0) {
@@ -98,11 +106,11 @@ public:
 
         }
 
-/*        this->closeConnection();
+       this->closeConnection();
 
         delete[] message;
 
-        return 0;*/
+        return 0;
     };
 
     int getFile() {
