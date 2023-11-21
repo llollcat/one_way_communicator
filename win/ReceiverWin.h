@@ -4,6 +4,7 @@
 
 #include <winsock2.h>
 #include <ws2tcpip.h>
+
 #include "iostream"
 #include "map"
 #include <fstream>
@@ -19,13 +20,12 @@ protected:
     SOCKET server_socket{};
     sockaddr_in client{};
 
-    int init() override {
+    void init() override {
         // initialise winsock
         WSADATA ws;
         std::cout << "Initialising Winsock..." << std::endl;
         if (WSAStartup(MAKEWORD(2, 2), &ws) != 0) {
-            std::cerr << "Failed. Error Code: " << WSAGetLastError() << std::endl;
-            return -1;
+            throw std::runtime_error("Failed. Error Code: " + std::to_string(WSAGetLastError()));
         }
         std::cout << "Initialised." << std::endl;
 
@@ -38,7 +38,7 @@ protected:
 
         if (server_socket == INVALID_SOCKET) {
             std::cerr << "socket() failed with error code: " << WSAGetLastError() << std::endl;
-            return -2;
+            throw std::runtime_error("Failed. Error Code: " + std::to_string(WSAGetLastError()));
         }
         std::cout << "Socket created." << std::endl;
 
@@ -52,29 +52,25 @@ protected:
         // bind
         if (bind(server_socket, (sockaddr *) &server, sizeof(server)) == SOCKET_ERROR) {
             std::cerr << "Bind failed with error code: " << WSAGetLastError();
-            return -3;
+            throw std::runtime_error("Failed. Error Code: " + std::to_string(WSAGetLastError()));
         }
         std::cout << "Bind done." << std::endl;
 
 
         sockaddr_len = sizeof(sockaddr_in);
-
-        return 0;
     }
 
-    int receive(unsigned char *message, int buffer_size) override {
+    void receive(unsigned char *message, int buffer_size) override {
         if (recvfrom(server_socket, reinterpret_cast<char *>(message), buffer_size, 0, (sockaddr *) &client,
                      &sockaddr_len) == SOCKET_ERROR) {
             std::cerr << "recvfrom() failed with error code: " << WSAGetLastError();
-            return -4;
+            throw std::runtime_error("Failed. Error Code: " + std::to_string(WSAGetLastError()));
         }
-        return 0;
     }
 
-    int closeConnection() override {
+    void closeConnection() override {
         closesocket(server_socket);
         WSACleanup();
-        return 0;
     }
 
 public:
@@ -82,4 +78,4 @@ public:
 };
 
 
-#endif //ONE_WAY_COMMUNICATOR_RECEIVERWIN_H
+#endif

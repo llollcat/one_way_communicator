@@ -1,7 +1,3 @@
-//
-// Created by tiramisu on 09.11.2023.
-//
-
 #ifndef ONE_WAY_COMMUNICATOR_SENDERWIN_H
 #define ONE_WAY_COMMUNICATOR_SENDERWIN_H
 
@@ -18,13 +14,12 @@ private:
     SOCKET client_socket{};
     sockaddr_in server{};
 
-    int init() override {
+    void init() override {
         // initialise winsock
         WSADATA ws;
         std::cout << "Initialising Winsock..." << std::endl;
         if (WSAStartup(MAKEWORD(2, 2), &ws) != 0) {
-            std::cerr << "Failed. Error Code: " << WSAGetLastError() << std::endl;
-            return -1;
+            throw std::runtime_error("Failed. Error Code: " + std::to_string(WSAGetLastError()));
         }
         std::cout << "Initialised." << std::endl;
 
@@ -42,19 +37,15 @@ private:
         this->server.sin_family = AF_INET;
         this->server.sin_port = htons(PORT);
         this->server.sin_addr.S_un.S_addr = inet_addr(SERVER);
-        return 0;
     }
 
 
-    int send(unsigned char *message, int message_size) override {
+    void send(unsigned char *message, int message_size) override {
         if (sendto(this->client_socket, reinterpret_cast<char *>(message), message_size, 0,
                    (sockaddr *) &this->server, sizeof(sockaddr_in)) == SOCKET_ERROR) {
-            std::cerr << "sendto() failed with error code: " << WSAGetLastError();
-            return -3;
+            throw std::runtime_error("Failed. Error Code: " + std::to_string(WSAGetLastError()));
         }
-        return 0;
     }
-
 
 
 public:
@@ -67,4 +58,4 @@ public:
 };
 
 
-#endif //ONE_WAY_COMMUNICATOR_SENDERWIN_H
+#endif

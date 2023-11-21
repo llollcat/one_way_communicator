@@ -19,28 +19,22 @@ private:
     struct sockaddr_in servaddr{};
     int sockfd{};
 
-    int init() override {
+    void init() override {
         if ((sockfd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) < 0) {
-            perror("socket creation failed");
-            exit(EXIT_FAILURE);
+            throw std::runtime_error("Failed. Error Code: " + std::to_string(*strerror(errno)));
         }
         // Filling server information
         servaddr.sin_family = AF_INET;
         servaddr.sin_port = htons(PORT);
         servaddr.sin_addr.s_addr = inet_addr(SERVER);
 
-        return 0;
     }
 
-    int send(unsigned char *message, int message_size) override {
-
-
+    void send(unsigned char *message, int message_size) override {
         sendto(sockfd, message, message_size,
                0, (const struct sockaddr *) &servaddr,
                sizeof(servaddr));
 
-
-        return 0;
 
     }
 

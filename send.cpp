@@ -1,13 +1,13 @@
-#include "Sender.h"
-#include "ArgumentsGetter.h"
 #include <fstream>
 #include "iostream"
-#include "CommonFrame.h"
-#include "ControlFrame.h"
 #include <string>
 #include <filesystem>
 #include <csignal>
 
+#include "Sender.h"
+#include "ArgumentsGetter.h"
+#include "CommonFrame.h"
+#include "ControlFrame.h"
 
 #define D_PORT "8888"
 #define D_FILE_FRAME_SIZE "512"
@@ -15,6 +15,7 @@
 
 namespace {
     std::function<void(int)> shutdown_handler;
+
     void signal_handler(int signal) { shutdown_handler(signal); }
 }
 
@@ -38,7 +39,7 @@ int main(int argc, char *argv[]) {
 
 
     bool is_working = true;
-    shutdown_handler = [&is_working](int signal) -> void{
+    shutdown_handler = [&is_working](int signal) -> void {
         is_working = false;
     };
 

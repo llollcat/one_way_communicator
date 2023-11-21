@@ -16,16 +16,16 @@ protected:
     volatile bool m_is_working = true;
     unsigned int PORT;
 
-    virtual int init() = 0;
+    virtual void init() = 0;
 
-    virtual int receive(unsigned char *message, int buffer_size) = 0;
+    virtual void receive(unsigned char *message, int buffer_size) = 0;
 
-    virtual int closeConnection() = 0;
-
-
+    virtual void closeConnection() = 0;
 
 
-    static int writeToFile(char *output_filename, const std::map<unsigned int, CommonFrame *> &commonFrameMap) {
+
+
+    static void writeToFile(char *output_filename, const std::map<unsigned int, CommonFrame *> &commonFrameMap) {
         std::ofstream output_file;
         output_file.open(output_filename, std::ios::binary);
         for (auto item: commonFrameMap) {
@@ -35,7 +35,6 @@ protected:
         output_file.close();
         std::cout << "Done!" << std::endl;
 
-        return 0;
     }
 
 public:
@@ -46,10 +45,7 @@ public:
         this->m_is_working = false;
     }
 
-    int getFile(const char *filename) {
-        if (!this->m_is_working) {
-            return -5;
-        }
+    void getFile(const char *filename) {
         this->init();
 
         auto *message = new unsigned char[m_frame_size];
@@ -59,9 +55,8 @@ public:
         while (this->m_is_working) {
             // try to receive some data, this is a blocking call
 
-            if (this->receive(message, m_frame_size) != 0) {
-                return -4;
-            }
+            this->receive(message, m_frame_size);
+
 
             if (Frame::isControlFrame(message)) {
                 auto controlFrame = new ControlFrame(message);
@@ -110,11 +105,10 @@ public:
 
         delete[] message;
 
-        return 0;
     };
 
-    int getFile() {
-        return this->getFile(nullptr);
+    void getFile() {
+        this->getFile(nullptr);
     }
 
 

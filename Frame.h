@@ -2,13 +2,16 @@
 #define ONE_WAY_COMMUNICATOR_FRAME_H
 
 #include <cstring>
-class Frame {
+
+class Frame { // NOLINT(cppcoreguidelines-pro-type-member-init)
 protected:
     unsigned char *mp_data; // contains all data for transferring
     int mp_data_size; // size with service data. example: frame_number, single_frame_len
     unsigned long long file_id;
+
+
     //! on adding new member change it
-    const int FRAME_ADDITIONAL_MEMBER_SIZE= sizeof(file_id) + sizeof(mp_data_size);
+    const int FRAME_ADDITIONAL_MEMBER_SIZE = sizeof(file_id) + sizeof(mp_data_size);
 
 
     static void insertUInt(unsigned int ui_number, unsigned char *p_dest) {
@@ -51,7 +54,8 @@ protected:
 
 
 public:
-    static bool isControlFrame(unsigned char *data){
+
+    static bool isControlFrame(unsigned char *data) {
         return getUInt(data + 0) == 0;
     }
 
@@ -64,7 +68,7 @@ public:
     [[nodiscard]] int getDataSize() const {
         return mp_data_size;
     }
-    //todo ad virtual
+
     ~Frame() {
         delete[] this->mp_data;
 

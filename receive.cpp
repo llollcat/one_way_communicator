@@ -1,11 +1,13 @@
 #include "Receiver.h"
 #include "ArgumentsGetter.h"
 #include <csignal>
+
 #define D_PORT "8888"
 #define D_FILE_FRAME_SIZE "512"
-
+//todo check filename parametr is working
 namespace {
     std::function<void(int)> shutdown_handler;
+
     void signal_handler(int signal) { shutdown_handler(signal); }
 }
 
@@ -22,12 +24,13 @@ int main(int argc, char *argv[]) {
 
 
     int port = stoi(input.getCmdOptionIfGiven("-port", D_PORT));
-    int file_frame_size = stoi(input.getCmdOptionIfGiven("-file-frame-size", D_FILE_FRAME_SIZE));  //  real size of frame is m_file_frame_size+4
+    int file_frame_size = stoi(input.getCmdOptionIfGiven("-file-frame-size",
+                                                         D_FILE_FRAME_SIZE));  //  real size of frame is m_file_frame_size+4
 
 
     Receiver receiver = Receiver(file_frame_size, port);
 
-    shutdown_handler = [&receiver](int signal) -> void{
+    shutdown_handler = [&receiver](int signal) -> void {
         receiver.stopReceivingSignal();
     };
 

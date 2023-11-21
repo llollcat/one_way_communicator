@@ -2,7 +2,6 @@
 #define ONE_WAY_COMMUNICATOR_RECEIVERLINUX_H
 
 
-#include <bits/stdc++.h>
 #include <cstdlib>
 #include <unistd.h>
 #include <cstring>
@@ -11,22 +10,20 @@
 #include <arpa/inet.h>
 #include <netinet/in.h>
 
+#include "string"
+
 #include "../AbstractBaseReceiver.h"
 
 
 class Receiver : public AbstractBaseReceiver {
 protected:
-    int sockfd;
-    struct sockaddr_in servaddr, cliaddr;
+    int sockfd{};
+    struct sockaddr_in servaddr{}, cliaddr{};
 
-    int init() override {
-
-
-
+    void init() override {
         // Creating socket file descriptor
         if ((sockfd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) < 0) {
-            std::cerr << ("socket creation failed") << std::endl;
-            return -1;
+            throw std::runtime_error("Failed. Error Code: " + std::to_string(*strerror(errno)));
         }
 
         memset(&servaddr, 0, sizeof(servaddr));
@@ -39,15 +36,13 @@ protected:
 
         if (bind(sockfd, (const struct sockaddr *) &servaddr, sizeof(servaddr)) < 0) {
 
-            std::cerr << ("bind failed") << std::endl;
-            return -2;
+            throw std::runtime_error("Failed. Error Code: " + std::to_string(*strerror(errno)));
+
         }
-        return 0;
+
     }
 
-    int receive(unsigned char *message, int buffer_size) override {
-
-
+    void receive(unsigned char *message, int buffer_size) override {
         socklen_t len = sizeof(cliaddr);
 
         // try to receive some data, this is a blocking call
@@ -55,15 +50,10 @@ protected:
                  0, (struct sockaddr *) &cliaddr,
                  &len);
 
-
-        return 0;
     }
 
-    int closeConnection() override {
+    void closeConnection() override {
         close(sockfd);
-
-        return 0;
-
     }
 
 

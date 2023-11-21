@@ -1,7 +1,3 @@
-//
-// Created by tiramisu on 01.11.2023.
-//
-
 #ifndef ONE_WAY_COMMUNICATOR_CONTROLFRAME_H
 #define ONE_WAY_COMMUNICATOR_CONTROLFRAME_H
 
@@ -38,7 +34,7 @@ public:
     }
 
     // from received to class
-    ControlFrame(unsigned char *data) {
+    explicit ControlFrame(unsigned char *data) {
         this->mp_data_size = getUInt(data + 4);
         this->m_common_frame_amount = getUInt(data + 8);
         this->file_id = getULongLong(data + 12);
