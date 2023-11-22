@@ -35,7 +35,13 @@ int main(int argc, char *argv[]) {
 
     auto server = input.getCmdOptionSafely("-server").c_str();
     int port = stoi(input.getCmdOptionIfGiven("-port", D_PORT));
-    int file_frame_size = stoi(input.getCmdOptionIfGiven("-file-frame-size", D_FILE_FRAME_SIZE));
+    int file_frame_size = stoi(input.getCmdOptionIfGiven("-file-frame-size", D_FILE_FRAME_SIZE))
+                          - 32 - CommonFrame::COMMON_FRAME_ADDITIONAL_MEMBER_SIZE;
+
+    if (file_frame_size<=0){
+        std::cout << "-file-frame-size must be greater than " << 33 + CommonFrame::COMMON_FRAME_ADDITIONAL_MEMBER_SIZE;
+        return 1;
+    }
 
 
     bool is_working = true;
@@ -44,7 +50,7 @@ int main(int argc, char *argv[]) {
     };
 
     std::signal(SIGINT, signal_handler);
-
+    //todo move it to class
     auto sendFile = [&file_frame_size, &server, &port, &is_working]
             (unsigned long long t_file_id, const char *filename_name, const char *filename_path) {
 
@@ -66,7 +72,7 @@ int main(int argc, char *argv[]) {
 
 
         char *message = new char[file_frame_size];
-        for (int frame_count = 1; in_file.peek() != EOF || is_working; ++frame_count) {
+        for (int frame_count = 1; in_file.peek() != EOF && is_working; ++frame_count) {
             in_file.read(message, file_frame_size);
             CommonFrame *commonFrame;
             if (frame_count == common_frame_number && file_size % file_frame_size != 0) {

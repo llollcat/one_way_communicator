@@ -10,8 +10,7 @@ protected:
     unsigned long long file_id;
 
 
-    //! on adding new member change it
-    const int FRAME_ADDITIONAL_MEMBER_SIZE = sizeof(file_id) + sizeof(mp_data_size);
+
 
 
     static void insertUInt(unsigned int ui_number, unsigned char *p_dest) {
@@ -54,6 +53,9 @@ protected:
 
 
 public:
+    //! on adding new member change it
+    static const int FRAME_ADDITIONAL_MEMBER_SIZE = sizeof(file_id) + sizeof(mp_data_size);
+
 
     static bool isControlFrame(unsigned char *data) {
         return getUInt(data + 0) == 0;

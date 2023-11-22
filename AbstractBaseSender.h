@@ -4,27 +4,27 @@
 
 class AbstractBaseSender {
 protected:
-    const char *SERVER;
-    unsigned int PORT;
+    const char *mp_server;
+    unsigned int m_port;
     bool is_init = false;
 
     virtual void init() = 0;
 
-    virtual void send(unsigned char *message, int buffer_size) = 0;
+    virtual void send(unsigned char *p_message, int buffer_size) = 0;
 
 
 public:
-    AbstractBaseSender(const char *server, unsigned int port) : SERVER(server), PORT(port) {}
+    AbstractBaseSender(const char *p_server, unsigned int port) : mp_server(p_server), m_port(port) {}
 
 
-    virtual void sendData(unsigned char *data, int size) {
+    virtual void sendData(unsigned char *p_data, int size) {
         if (!is_init) {
             init();
             is_init = true;
 
         }
 
-        send(data, size);
+        send(p_data, size);
 
     };
 

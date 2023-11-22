@@ -17,24 +17,25 @@
 
 class Receiver : public AbstractBaseReceiver {
 protected:
-    int sockfd{};
-    struct sockaddr_in servaddr{}, cliaddr{};
+    int m_sockfd{};
+    struct sockaddr_in m_servaddr{};
+    struct sockaddr_in m_cliaddr{};
 
     void init() override {
         // Creating socket file descriptor
-        if ((sockfd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) < 0) {
+        if ((m_sockfd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) < 0) {
             throw std::runtime_error("Failed. Error Code: " + std::to_string(*strerror(errno)));
         }
 
-        memset(&servaddr, 0, sizeof(servaddr));
-        memset(&cliaddr, 0, sizeof(cliaddr));
+        memset(&m_servaddr, 0, sizeof(m_servaddr));
+        memset(&m_cliaddr, 0, sizeof(m_cliaddr));
 
         // Filling server information
-        servaddr.sin_family = AF_INET; // IPv4
-        servaddr.sin_addr.s_addr = INADDR_ANY;
-        servaddr.sin_port = htons(PORT);
+        m_servaddr.sin_family = AF_INET; // IPv4
+        m_servaddr.sin_addr.s_addr = INADDR_ANY;
+        m_servaddr.sin_port = htons(m_port);
 
-        if (bind(sockfd, (const struct sockaddr *) &servaddr, sizeof(servaddr)) < 0) {
+        if (bind(m_sockfd, (const struct sockaddr *) &m_servaddr, sizeof(m_servaddr)) < 0) {
 
             throw std::runtime_error("Failed. Error Code: " + std::to_string(*strerror(errno)));
 
@@ -42,24 +43,23 @@ protected:
 
     }
 
-    void receive(unsigned char *message, int buffer_size) override {
-        socklen_t len = sizeof(cliaddr);
+    void receive(unsigned char *p_message, int buffer_size) override {
+        socklen_t len = sizeof(m_cliaddr);
 
         // try to receive some data, this is a blocking call
-        recvfrom(sockfd, (char *) message, buffer_size,
-                 0, (struct sockaddr *) &cliaddr,
+        recvfrom(m_sockfd, (char *) p_message, buffer_size,
+                 0, (struct sockaddr *) &m_cliaddr,
                  &len);
 
     }
 
     void closeConnection() override {
-        close(sockfd);
+        close(m_sockfd);
     }
 
 
 public:
     Receiver(int fileFrameSize, unsigned int port) : AbstractBaseReceiver(fileFrameSize, port) {}
-
 
 };
 

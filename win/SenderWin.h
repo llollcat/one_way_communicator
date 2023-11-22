@@ -35,8 +35,8 @@ private:
 
         // setup address structure
         this->server.sin_family = AF_INET;
-        this->server.sin_port = htons(PORT);
-        this->server.sin_addr.S_un.S_addr = inet_addr(SERVER);
+        this->server.sin_port = htons(m_port);
+        this->server.sin_addr.S_un.S_addr = inet_addr(mp_server);
     }
 
 

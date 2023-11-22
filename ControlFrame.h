@@ -10,12 +10,11 @@ private:
     unsigned int m_common_frame_amount;
 
 
+public:
     //! on adding new member change it
-    const int ADDITIONAL_MEMBER_SIZE =
+    static const int ADDITIONAL_MEMBER_SIZE =
             FRAME_ADDITIONAL_MEMBER_SIZE + sizeof(unsigned int) + sizeof(m_common_frame_amount);
 
-
-public:
 
     // control Frame
     // t_single_frame_len - currently unused

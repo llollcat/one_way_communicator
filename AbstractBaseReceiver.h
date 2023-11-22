@@ -12,23 +12,25 @@
 
 class AbstractBaseReceiver {
 protected:
-    int m_frame_size;
+    int m_file_frame_size;
+    int m_frame_full_size;
+
     volatile bool m_is_working = true;
-    unsigned int PORT;
+    unsigned int m_port;
 
     virtual void init() = 0;
 
-    virtual void receive(unsigned char *message, int buffer_size) = 0;
+    virtual void receive(unsigned char *p_message, int buffer_size) = 0;
 
     virtual void closeConnection() = 0;
 
 
 
 
-    static void writeToFile(char *output_filename, const std::map<unsigned int, CommonFrame *> &commonFrameMap) {
+    static void writeToFile(const char *p_output_filename, const std::map<unsigned int, CommonFrame *> &r_commonFrameMap) {
         std::ofstream output_file;
-        output_file.open(output_filename, std::ios::binary);
-        for (auto item: commonFrameMap) {
+        output_file.open(p_output_filename, std::ios::binary);
+        for (auto item: r_commonFrameMap) {
             output_file.write(reinterpret_cast<char *>(item.second->getData() + item.second->getAdditionalMemberSize()),
                               item.second->getDataSize() - item.second->getAdditionalMemberSize());
         }
@@ -39,27 +41,28 @@ protected:
 
 public:
 
-    AbstractBaseReceiver(int fileFrameSize, unsigned int port) : m_frame_size(fileFrameSize), PORT(port) {}
+    AbstractBaseReceiver(int fileFrameSize, unsigned int port) : m_file_frame_size(fileFrameSize),
+    m_frame_full_size(fileFrameSize+ CommonFrame::COMMON_FRAME_ADDITIONAL_MEMBER_SIZE+32), m_port(port) {}
 
     virtual void stopReceivingSignal(){
         this->m_is_working = false;
     }
 
-    void getFile(const char *filename) {
+    void getFiles() {
         this->init();
 
-        auto *message = new unsigned char[m_frame_size];
+        auto *p_message = new unsigned char[this->m_file_frame_size + 32];
         std::map<unsigned int, ControlFrame *> controlFrameMap;
         std::map<unsigned int, std::map<unsigned int, CommonFrame *>> commonFrameMap;
         std::cout << "Receiving started" << std::endl;
         while (this->m_is_working) {
             // try to receive some data, this is a blocking call
 
-            this->receive(message, m_frame_size);
+            this->receive(p_message, this->m_file_frame_size + 32);
 
 
-            if (Frame::isControlFrame(message)) {
-                auto controlFrame = new ControlFrame(message);
+            if (Frame::isControlFrame(p_message)) {
+                auto controlFrame = new ControlFrame(p_message);
                 controlFrameMap[controlFrame->getFileId()] = controlFrame;
 
                 if (controlFrame->getCommonFrameAmount() <= commonFrameMap[controlFrame->getFileId()].size()) {
@@ -78,7 +81,7 @@ public:
 
 
             } else {
-                auto *commonFrame = new CommonFrame(message);
+                auto *commonFrame = new CommonFrame(p_message);
                 commonFrameMap[commonFrame->getFileId()][commonFrame->getFrameNumber()] = commonFrame;
                 if (controlFrameMap.count(commonFrame->getFileId())) {
                     auto controlFrame = controlFrameMap[commonFrame->getFileId()];
@@ -103,13 +106,10 @@ public:
 
        this->closeConnection();
 
-        delete[] message;
+        delete[] p_message;
 
     };
 
-    void getFile() {
-        this->getFile(nullptr);
-    }
 
 
 };

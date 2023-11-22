@@ -16,35 +16,35 @@
 
 class Sender : public AbstractBaseSender {
 private:
-    struct sockaddr_in servaddr{};
-    int sockfd{};
+    struct sockaddr_in m_servaddr{};
+    int m_sockfd{};
 
     void init() override {
-        if ((sockfd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) < 0) {
+        if ((m_sockfd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) < 0) {
             throw std::runtime_error("Failed. Error Code: " + std::to_string(*strerror(errno)));
         }
         // Filling server information
-        servaddr.sin_family = AF_INET;
-        servaddr.sin_port = htons(PORT);
-        servaddr.sin_addr.s_addr = inet_addr(SERVER);
+        m_servaddr.sin_family = AF_INET;
+        m_servaddr.sin_port = htons(m_port);
+        m_servaddr.sin_addr.s_addr = inet_addr(mp_server);
 
     }
 
-    void send(unsigned char *message, int message_size) override {
-        sendto(sockfd, message, message_size,
-               0, (const struct sockaddr *) &servaddr,
-               sizeof(servaddr));
+    void send(unsigned char *p_message, int message_size) override {
+        sendto(m_sockfd, p_message, message_size,
+               0, (const struct sockaddr *) &m_servaddr,
+               sizeof(m_servaddr));
 
 
     }
 
 
 public:
-    Sender(const char *server, unsigned int port) : AbstractBaseSender(server, port) {}
+    Sender(const char *p_server, unsigned int port) : AbstractBaseSender(p_server, port) {}
 
 
     virtual ~Sender() {
-        close(sockfd);
+        close(m_sockfd);
     }
 };
 

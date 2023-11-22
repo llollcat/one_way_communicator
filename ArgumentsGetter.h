@@ -7,24 +7,24 @@
 
 class ArgumentsGetter {
 private:
-    std::vector<std::string> tokens;
+    std::vector<std::string> m_tokensVector;
 
 
 public:
     ArgumentsGetter(int &argc, char **argv) {
         for (int i = 1; i < argc; ++i)
-            this->tokens.emplace_back(argv[i]);
+            this->m_tokensVector.emplace_back(argv[i]);
     }
 
 
     [[nodiscard]] bool isCmdOptionExists(const std::string &option) const {
-        return std::find(this->tokens.begin(), this->tokens.end(), option) != this->tokens.end();
+        return std::find(this->m_tokensVector.begin(), this->m_tokensVector.end(), option) != this->m_tokensVector.end();
     }
 
     [[nodiscard]] const std::string &getCmdOption(const std::string &option) const {
         std::vector<std::string>::const_iterator itr;
-        itr = std::find(this->tokens.begin(), this->tokens.end(), option);
-        if (itr != this->tokens.end() && ++itr != this->tokens.end()) {
+        itr = std::find(this->m_tokensVector.begin(), this->m_tokensVector.end(), option);
+        if (itr != this->m_tokensVector.end() && ++itr != this->m_tokensVector.end()) {
             return *itr;
         }
         static const std::string empty_string;
@@ -35,7 +35,7 @@ public:
     [[nodiscard]] const std::string &getCmdOptionSafely(const std::string &option) const {
         if (!isCmdOptionExists(option)) {
             std::cout << option << " - not given. -h for help and example" << std::endl;
-            exit(-1);
+            exit(1);
 
         }
         return getCmdOption(option);

@@ -9,11 +9,14 @@ private:
     unsigned int m_frame_number;
 
 
-    //! on adding new member change it
-    const int COMMON_FRAME_ADDITIONAL_MEMBER_SIZE = FRAME_ADDITIONAL_MEMBER_SIZE + sizeof(m_frame_number);
+
 
 
 public:
+    //! on adding new member change it
+    static const int COMMON_FRAME_ADDITIONAL_MEMBER_SIZE = FRAME_ADDITIONAL_MEMBER_SIZE + sizeof(m_frame_number);
+
+
     // common Frame
     // p_data - without service data , t_data_size without service data
     CommonFrame(const unsigned int t_frame_number, unsigned long long t_file_id, const char *p_data,

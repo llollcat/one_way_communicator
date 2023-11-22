@@ -47,7 +47,7 @@ protected:
 
         server.sin_family = AF_INET;
         server.sin_addr.s_addr = INADDR_ANY;
-        server.sin_port = htons(PORT);
+        server.sin_port = htons(m_port);
 
         // bind
         if (bind(server_socket, (sockaddr *) &server, sizeof(server)) == SOCKET_ERROR) {
@@ -63,7 +63,6 @@ protected:
     void receive(unsigned char *message, int buffer_size) override {
         if (recvfrom(server_socket, reinterpret_cast<char *>(message), buffer_size, 0, (sockaddr *) &client,
                      &sockaddr_len) == SOCKET_ERROR) {
-            std::cerr << "recvfrom() failed with error code: " << WSAGetLastError();
             throw std::runtime_error("Failed. Error Code: " + std::to_string(WSAGetLastError()));
         }
     }
