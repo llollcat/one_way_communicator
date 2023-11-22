@@ -17,9 +17,8 @@ public:
 
 
     // control Frame
-    // t_single_frame_len - currently unused
     ControlFrame(const unsigned int t_common_frame_amount, unsigned long long t_file_id, const char *p_filename,
-                 const int t_filename_size) {
+                 const int t_filename_size) : Frame() {
         this->m_common_frame_amount = t_common_frame_amount;
         this->mp_data_size = ADDITIONAL_MEMBER_SIZE + t_filename_size;
         this->mp_data = new unsigned char[this->mp_data_size];
@@ -33,7 +32,7 @@ public:
     }
 
     // from received to class
-    explicit ControlFrame(unsigned char *data) {
+    explicit ControlFrame(unsigned char *data) : Frame() {
         this->mp_data_size = getUInt(data + 4);
         this->m_common_frame_amount = getUInt(data + 8);
         this->file_id = getULongLong(data + 12);
@@ -46,9 +45,6 @@ public:
         return this->m_common_frame_amount;
     }
 
-    [[nodiscard]] int getAdditionalMemberSize() const {
-        return ADDITIONAL_MEMBER_SIZE;
-    }
 
 
 };

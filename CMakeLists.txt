@@ -11,9 +11,6 @@ if (WIN32)
 
 endif ()
 
-if(UNIX AND NOT APPLE)
-    set(LINUX TRUE CACHE INTERNAL "")
-endif()
 
 if (NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Release)

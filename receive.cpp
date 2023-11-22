@@ -1,9 +1,13 @@
+#include <csignal>
+
 #include "Receiver.h"
 #include "ArgumentsGetter.h"
-#include <csignal>
+
 
 #define D_PORT "8888"
 #define D_FILE_FRAME_SIZE "512"
+
+// for ctrl+c handler
 namespace {
     std::function<void(int)> shutdown_handler;
 
