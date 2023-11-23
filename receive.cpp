@@ -2,7 +2,7 @@
 
 #include "Receiver.h"
 #include "ArgumentsGetter.h"
-
+#include <functional>
 
 #define D_PORT "8888"
 #define D_FILE_FRAME_SIZE "512"

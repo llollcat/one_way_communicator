@@ -7,7 +7,9 @@
 
 #include "iostream"
 #include "map"
+#include "string"
 #include <fstream>
+
 
 #include "../CommonFrame.h"
 #include "../ControlFrame.h"
