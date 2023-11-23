@@ -1,6 +1,8 @@
 #ifndef ONE_WAY_COMMUNICATOR_ABSTRACTBASESENDER_H
 #define ONE_WAY_COMMUNICATOR_ABSTRACTBASESENDER_H
 
+#include <thread>
+#include <math.h>
 
 #include "ControlFrame.h"
 #include "CommonFrame.h"
@@ -11,6 +13,7 @@ protected:
     unsigned int m_port;
     bool m_is_init = false;
     bool m_is_working = true;
+    bool m_is_high_speed = false;
     int file_frame_size;
 
     virtual void init() = 0;
@@ -28,8 +31,8 @@ protected:
 
 
 public:
-    AbstractBaseSender(const char *p_server, unsigned int port, int file_frame_size) :
-            mp_server(p_server), m_port(port), file_frame_size(file_frame_size) {}
+    AbstractBaseSender(const char *p_server, unsigned int port, int file_frame_size, bool is_high_speed) :
+            mp_server(p_server), m_port(port), file_frame_size(file_frame_size), m_is_high_speed(is_high_speed) {}
 
 
     virtual void stopReceivingSignal() {
@@ -56,6 +59,7 @@ public:
 
         char *message = new char[file_frame_size];
         for (int frame_count = 1; in_file.peek() != EOF && this->m_is_working; ++frame_count) {
+
             in_file.read(message, file_frame_size);
             CommonFrame *commonFrame;
             if (frame_count == common_frame_number && file_size % file_frame_size != 0) {
@@ -63,11 +67,19 @@ public:
             } else {
                 commonFrame = new CommonFrame(frame_count, t_file_id, message, file_frame_size);
             }
+            if (!m_is_high_speed) {
+                std::cout << frame_count << std::endl;
+
+
+            }
+
 
             sendData(commonFrame->getData(), commonFrame->getDataSize());
             delete commonFrame;
         }
+
         std::cout << "Done." << std::endl;
+
         delete[] message;
 
 

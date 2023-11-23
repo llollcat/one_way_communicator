@@ -26,10 +26,17 @@ private:
         // create socket
 
         this->client_socket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
-        DWORD optValue = TRUE;
-        setsockopt(client_socket, IPPROTO_UDP, UDP_CHECKSUM_COVERAGE, (const char *) &optValue, sizeof(optValue));
-        DWORD optValue2 = FALSE;
-        setsockopt(client_socket, IPPROTO_UDP, UDP_NOCHECKSUM, (const char *) &optValue2, sizeof(optValue2));
+        DWORD opt_value_true = TRUE;
+        DWORD opt_value_false = FALSE;
+        setsockopt(client_socket, IPPROTO_UDP, UDP_CHECKSUM_COVERAGE, (const char *) &opt_value_true,
+                   sizeof(opt_value_true));
+        setsockopt(client_socket, IPPROTO_UDP, UDP_NOCHECKSUM, (const char *) &opt_value_false,
+                   sizeof(opt_value_false));
+        LINGER linger;
+        linger.l_onoff = 2;
+        setsockopt(client_socket, IPPROTO_UDP, SO_LINGER, (const char *) &linger, sizeof(linger));
+
+
         std::cout << "Socket created." << std::endl;
 
 
@@ -49,7 +56,8 @@ private:
 
 
 public:
-    Sender(const char *p_server, unsigned int port, int file_frame_size) : AbstractBaseSender(p_server, port, file_frame_size) {}
+    Sender(const char *p_server, unsigned int port, int file_frame_size, bool is_high_speed) :
+    AbstractBaseSender(p_server, port, file_frame_size, is_high_speed) {}
 
     virtual ~Sender() {
         closesocket(this->client_socket);

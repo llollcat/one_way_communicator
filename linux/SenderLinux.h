@@ -40,7 +40,8 @@ private:
 
 
 public:
-    Sender(const char *p_server, unsigned int port, int file_frame_size) : AbstractBaseSender(p_server, port, file_frame_size) {}
+    Sender(const char *p_server, unsigned int port, int file_frame_size, bool is_high_speed) :
+            AbstractBaseSender(p_server, port, file_frame_size, is_high_speed) {}
 
 
     virtual ~Sender() {

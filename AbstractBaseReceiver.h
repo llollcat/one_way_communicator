@@ -39,7 +39,7 @@ protected:
 public:
 
     AbstractBaseReceiver(int fileFrameSize, unsigned int port) :
-            m_frame_full_size(fileFrameSize +32 + CommonFrame::COMMON_FRAME_ADDITIONAL_MEMBER_SIZE), m_port(port) {}
+            m_frame_full_size(fileFrameSize + 32 + CommonFrame::COMMON_FRAME_ADDITIONAL_MEMBER_SIZE), m_port(port) {}
 
     virtual void stopReceivingSignal() {
         this->m_is_working = false;
@@ -72,9 +72,7 @@ public:
 
                     writeToFile(output_filename, commonFrameMap[controlFrame->getFileId()]);
                     commonFrameMap.erase(controlFrame->getFileId());
-
                 }
-
 
             } else {
                 auto *commonFrame = new CommonFrame(p_message);

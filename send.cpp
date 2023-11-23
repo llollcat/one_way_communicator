@@ -37,6 +37,7 @@ int main(int argc, char *argv[]) {
     int port = stoi(input.getCmdOptionIfGiven("-port", D_PORT));
     int file_frame_size = stoi(input.getCmdOptionIfGiven("-file-frame-size", D_FILE_FRAME_SIZE))
                           - 32 - CommonFrame::COMMON_FRAME_ADDITIONAL_MEMBER_SIZE;
+    bool is_high_speed = input.isCmdOptionExists("-high-speed");
 
     if (file_frame_size <= 0) {
         std::cout << "-file-frame-size must be greater than " << 33 + CommonFrame::COMMON_FRAME_ADDITIONAL_MEMBER_SIZE;
@@ -44,7 +45,7 @@ int main(int argc, char *argv[]) {
     }
 
 
-    Sender sender = Sender(server, port, file_frame_size);
+    Sender sender = Sender(server, port, file_frame_size, is_high_speed);
 
     shutdown_handler = [&sender](int signal) -> void {
         sender.stopReceivingSignal();
