@@ -3,6 +3,7 @@
 #include <string>
 #include <filesystem>
 #include <csignal>
+#include <functional>
 
 #include "Sender.h"
 #include "ArgumentsGetter.h"
