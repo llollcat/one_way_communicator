@@ -41,11 +41,6 @@ public:
     [[nodiscard]] unsigned int getFrameNumber() const {
         return m_frame_number;
     }
-
-
-    [[nodiscard]] static int getAdditionalMemberSize() {
-        return COMMON_FRAME_ADDITIONAL_MEMBER_SIZE;
-    }
 };
 
 #endif

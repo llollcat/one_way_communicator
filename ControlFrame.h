@@ -17,7 +17,7 @@ public:
 
     // control Frame
     ControlFrame(const unsigned int t_common_frame_amount, unsigned long long t_file_id, const char *p_filename,
-                 const int t_filename_size) :
+                 const unsigned int t_filename_size) :
             Frame(new unsigned char[ADDITIONAL_MEMBER_SIZE + t_filename_size],
                   ADDITIONAL_MEMBER_SIZE + t_filename_size, t_file_id) {
 

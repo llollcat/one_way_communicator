@@ -48,7 +48,7 @@ public:
             std::cerr << "failed to open ";
         }
 
-        long long file_size = in_file.tellg();
+        int file_size = in_file.tellg();
         in_file.seekg(0, std::ios::beg);
 
         long long common_frame_number = (file_size / m_file_frame_size) + bool(file_size % m_file_frame_size);

@@ -45,7 +45,6 @@ protected:
 
         }
         return out | p_source[7];
-
     }
 
 
@@ -54,9 +53,8 @@ public:
     static const int FRAME_ADDITIONAL_MEMBER_SIZE = sizeof(file_id) + sizeof(mp_data_size);
 
 
-    Frame(unsigned char *mpData, int mpDataSize, unsigned long long int fileId) : mp_data(mpData),
-                                                                                  mp_data_size(mpDataSize),
-                                                                                  file_id(fileId) {}
+    Frame(unsigned char *mpData, unsigned int mpDataSize, unsigned long long int fileId) :
+            mp_data(mpData), mp_data_size(mpDataSize), file_id(fileId) {}
 
     static bool isControlFrame(unsigned char *data) {
         return getUInt(data + 0) == 0;
@@ -72,16 +70,13 @@ public:
         return mp_data_size;
     }
 
-    ~Frame() {
-        delete[] this->mp_data;
-
-    }
-
     [[nodiscard]] unsigned long long int getFileId() const {
         return file_id;
     }
 
+    ~Frame() {
+        delete[] this->mp_data;
+    }
 };
-
 
 #endif

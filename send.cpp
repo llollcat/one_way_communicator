@@ -63,7 +63,8 @@ int main(int argc, char *argv[]) {
         std::string path = input.getCmdOptionSafely("-dir");
         unsigned long long file_id = 1;
         for (const auto &entry: std::filesystem::directory_iterator(path)) {
-            sender.sendFile(file_id, reinterpret_cast<const char *>(entry.path().filename().string().c_str()),
+            sender.sendFile(file_id,
+                            reinterpret_cast<const char *>(entry.path().filename().string().c_str()),
                             reinterpret_cast<const char *>(entry.path().string().c_str()));
         }
 
@@ -71,4 +72,3 @@ int main(int argc, char *argv[]) {
     }
     return 0;
 }
-

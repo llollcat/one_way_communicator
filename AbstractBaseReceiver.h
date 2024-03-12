@@ -27,8 +27,8 @@ protected:
         std::ofstream output_file;
         output_file.open(p_output_filename, std::ios::binary);
         for (auto item: r_commonFrameMap) {
-            output_file.write(reinterpret_cast<char *>(item.second->getData() + item.second->getAdditionalMemberSize()),
-                              item.second->getDataSize() - item.second->getAdditionalMemberSize());
+            output_file.write(reinterpret_cast<char *>(item.second->getData() + CommonFrame::COMMON_FRAME_ADDITIONAL_MEMBER_SIZE),
+                              item.second->getDataSize() - CommonFrame::COMMON_FRAME_ADDITIONAL_MEMBER_SIZE);
         }
         output_file.close();
         std::cout << "Done!" << std::endl;
@@ -97,4 +97,5 @@ public:
 
     };
 };
+
 #endif

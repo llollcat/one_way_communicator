@@ -18,42 +18,38 @@ public:
 
 
     [[nodiscard]] bool isCmdOptionExists(const std::string &option) const {
-        return std::find(this->m_tokensVector.begin(), this->m_tokensVector.end(), option) != this->m_tokensVector.end();
+        return std::find(this->m_tokensVector.begin(), this->m_tokensVector.end(), option) !=
+               this->m_tokensVector.end();
     }
 
-    [[nodiscard]] const std::string &getCmdOption(const std::string &option) const {
-        std::vector<std::string>::const_iterator itr;
-        itr = std::find(this->m_tokensVector.begin(), this->m_tokensVector.end(), option);
+    [[nodiscard]]  std::string getCmdOption(const std::string &option) const {
+        auto itr = std::find(this->m_tokensVector.begin(), this->m_tokensVector.end(), option);
         if (itr != this->m_tokensVector.end() && ++itr != this->m_tokensVector.end()) {
-            //todo fix
-            return *itr;
+            return (*itr);
         }
-        static const std::string empty_string;
+
+        static std::string empty_string;
         return empty_string;
     }
 
     // if option does not exist out error
-    [[nodiscard]] const std::string &getCmdOptionSafely(const std::string &option) const {
+    [[nodiscard]] std::string getCmdOptionSafely(const std::string &option) const {
         if (!isCmdOptionExists(option)) {
             std::cout << option << " - not given. -h for help and example" << std::endl;
             exit(1);
-
         }
-        return getCmdOption(option);
 
+        return getCmdOption(option);
     }
 
 
-    [[nodiscard]] const std::string &
-    getCmdOptionIfGiven(const std::string &option, const std::string &default_value) const {
+    [[nodiscard]] std::string getCmdOptionIfGiven(const std::string &option, const std::string &default_value) const {
         if (!isCmdOptionExists(option)) {
             return default_value;
-
         }
-        return getCmdOption(option);
 
+        return getCmdOption(option);
     }
 };
-
 
 #endif
