@@ -48,6 +48,4 @@ public:
         close(m_sockfd);
     }
 };
-
-
 #endif

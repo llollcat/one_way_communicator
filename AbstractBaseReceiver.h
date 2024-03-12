@@ -1,7 +1,6 @@
 #ifndef ONE_WAY_COMMUNICATOR_ABSTRACTBASERECEIVER_H
 #define ONE_WAY_COMMUNICATOR_ABSTRACTBASERECEIVER_H
 
-
 #include "iostream"
 #include "map"
 #include <fstream>
@@ -33,7 +32,6 @@ protected:
         }
         output_file.close();
         std::cout << "Done!" << std::endl;
-
     }
 
 public:
@@ -53,8 +51,6 @@ public:
         std::map<unsigned int, std::map<unsigned int, CommonFrame *>> commonFrameMap;
         std::cout << "Receiving started" << std::endl;
         while (this->m_is_working) {
-            // try to receive some data, this is a blocking call
-
             this->receive(p_message, this->m_frame_full_size);
 
 
@@ -91,11 +87,8 @@ public:
                         commonFrameMap.erase(commonFrame->getFileId());
 
                     }
-
                 }
             }
-
-
         }
 
         this->closeConnection();
@@ -103,9 +96,5 @@ public:
         delete[] p_message;
 
     };
-
-
 };
-
-
 #endif

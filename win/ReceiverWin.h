@@ -77,6 +77,4 @@ protected:
 public:
     Receiver(int fileFrameSize, unsigned int port) : AbstractBaseReceiver(fileFrameSize, port) {}
 };
-
-
 #endif

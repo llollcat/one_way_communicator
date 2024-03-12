@@ -1,9 +1,9 @@
 #ifndef ONE_WAY_COMMUNICATOR_SENDERWIN_H
 #define ONE_WAY_COMMUNICATOR_SENDERWIN_H
 
-
 #include <winsock2.h>
 #include <ws2tcpip.h>
+
 #include "iostream"
 
 #include "../AbstractBaseSender.h"
@@ -24,7 +24,6 @@ private:
         std::cout << "Initialised." << std::endl;
 
         // create socket
-
         this->client_socket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
         DWORD opt_value_true = TRUE;
         DWORD opt_value_false = FALSE;
@@ -64,6 +63,4 @@ public:
         WSACleanup();
     }
 };
-
-
 #endif

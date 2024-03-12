@@ -6,11 +6,8 @@
 class Frame { // NOLINT(cppcoreguidelines-pro-type-member-init)
 protected:
     unsigned char *mp_data; // contains all data for transferring
-    int mp_data_size; // size with service data. example: frame_number, single_frame_len
+    unsigned int mp_data_size; // size with service data. example: frame_number, single_frame_len
     unsigned long long file_id;
-
-
-
 
 
     static void insertUInt(unsigned int ui_number, unsigned char *p_dest) {
@@ -57,6 +54,10 @@ public:
     static const int FRAME_ADDITIONAL_MEMBER_SIZE = sizeof(file_id) + sizeof(mp_data_size);
 
 
+    Frame(unsigned char *mpData, int mpDataSize, unsigned long long int fileId) : mp_data(mpData),
+                                                                                  mp_data_size(mpDataSize),
+                                                                                  file_id(fileId) {}
+
     static bool isControlFrame(unsigned char *data) {
         return getUInt(data + 0) == 0;
     }
@@ -67,7 +68,7 @@ public:
     }
 
 
-    [[nodiscard]] int getDataSize() const {
+    [[nodiscard]] unsigned int getDataSize() const {
         return mp_data_size;
     }
 

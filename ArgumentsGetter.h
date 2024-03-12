@@ -25,6 +25,7 @@ public:
         std::vector<std::string>::const_iterator itr;
         itr = std::find(this->m_tokensVector.begin(), this->m_tokensVector.end(), option);
         if (itr != this->m_tokensVector.end() && ++itr != this->m_tokensVector.end()) {
+            //todo fix
             return *itr;
         }
         static const std::string empty_string;
