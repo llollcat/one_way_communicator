@@ -1,5 +1,5 @@
 #include <fstream>
-#include "iostream"
+#include <iostream>
 #include <string>
 #include <filesystem>
 #include <csignal>
@@ -41,7 +41,7 @@ int main(int argc, char *argv[]) {
     bool is_high_speed = input.isCmdOptionExists("-high-speed");
 
     if (file_frame_size <= 0) {
-        std::cout << "-file-frame-size must be greater than " << 33 + CommonFrame::COMMON_FRAME_ADDITIONAL_MEMBER_SIZE;
+        std::cout << "-file-frame-size must be greater than " << 32 + CommonFrame::COMMON_FRAME_ADDITIONAL_MEMBER_SIZE;
         return 1;
     }
 
@@ -63,9 +63,7 @@ int main(int argc, char *argv[]) {
         std::string path = input.getCmdOptionSafely("-dir");
         unsigned long long file_id = 1;
         for (const auto &entry: std::filesystem::directory_iterator(path)) {
-            sender.sendFile(file_id,
-                            reinterpret_cast<const char *>(entry.path().filename().string().c_str()),
-                            reinterpret_cast<const char *>(entry.path().string().c_str()));
+            sender.sendFile(file_id, entry.path().filename().string().c_str(), entry.path().string().c_str());
         }
 
 

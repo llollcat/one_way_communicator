@@ -4,6 +4,7 @@
 #include "iostream"
 #include "map"
 #include <fstream>
+#include <thread>
 
 #include "CommonFrame.h"
 #include "ControlFrame.h"
@@ -22,8 +23,7 @@ protected:
     virtual void closeConnection() = 0;
 
 
-    static void
-    writeToFile(const char *p_output_filename, const std::map<unsigned int, CommonFrame *> &r_commonFrameMap) {
+    static void writeToFile(const char *p_output_filename, const std::map<unsigned int, CommonFrame *> &r_commonFrameMap) {
         std::ofstream output_file;
         output_file.open(p_output_filename, std::ios::binary);
         for (auto item: r_commonFrameMap) {
@@ -37,7 +37,7 @@ protected:
 public:
 
     AbstractBaseReceiver(int fileFrameSize, unsigned int port) :
-            m_frame_full_size(fileFrameSize + 32 + CommonFrame::COMMON_FRAME_ADDITIONAL_MEMBER_SIZE), m_port(port) {}
+            m_frame_full_size(fileFrameSize), m_port(port) {}
 
     virtual void stopReceivingSignal() {
         this->m_is_working = false;
@@ -53,29 +53,12 @@ public:
         while (this->m_is_working) {
             this->receive(p_message, this->m_frame_full_size);
 
+            auto handler = [&]() {
+                if (Frame::isControlFrame(p_message)) {
+                    auto controlFrame = new ControlFrame(p_message);
+                    controlFrameMap[controlFrame->getFileId()] = controlFrame;
 
-            if (Frame::isControlFrame(p_message)) {
-                auto controlFrame = new ControlFrame(p_message);
-                controlFrameMap[controlFrame->getFileId()] = controlFrame;
-
-                if (controlFrame->getCommonFrameAmount() <= commonFrameMap[controlFrame->getFileId()].size()) {
-                    char *output_filename = new char[ControlFrame::ADDITIONAL_MEMBER_SIZE + 1];
-                    strncpy(output_filename,
-                            reinterpret_cast<const char *>(controlFrame->getData() +
-                                                           ControlFrame::ADDITIONAL_MEMBER_SIZE),
-                            controlFrame->getDataSize() - ControlFrame::ADDITIONAL_MEMBER_SIZE);
-                    output_filename[controlFrame->getDataSize() - ControlFrame::ADDITIONAL_MEMBER_SIZE] = '\0';
-
-                    writeToFile(output_filename, commonFrameMap[controlFrame->getFileId()]);
-                    commonFrameMap.erase(controlFrame->getFileId());
-                }
-
-            } else {
-                auto *commonFrame = new CommonFrame(p_message);
-                commonFrameMap[commonFrame->getFileId()][commonFrame->getFrameNumber()] = commonFrame;
-                if (controlFrameMap.count(commonFrame->getFileId())) {
-                    auto controlFrame = controlFrameMap[commonFrame->getFileId()];
-                    if (controlFrame->getCommonFrameAmount() <= commonFrameMap[commonFrame->getFileId()].size()) {
+                    if (controlFrame->getCommonFrameAmount() <= commonFrameMap[controlFrame->getFileId()].size()) {
                         char *output_filename = new char[ControlFrame::ADDITIONAL_MEMBER_SIZE + 1];
                         strncpy(output_filename,
                                 reinterpret_cast<const char *>(controlFrame->getData() +
@@ -83,12 +66,36 @@ public:
                                 controlFrame->getDataSize() - ControlFrame::ADDITIONAL_MEMBER_SIZE);
                         output_filename[controlFrame->getDataSize() - ControlFrame::ADDITIONAL_MEMBER_SIZE] = '\0';
 
-                        writeToFile(output_filename, commonFrameMap[commonFrame->getFileId()]);
-                        commonFrameMap.erase(commonFrame->getFileId());
+                        writeToFile(output_filename, commonFrameMap[controlFrame->getFileId()]);
+                        commonFrameMap.erase(controlFrame->getFileId());
+                    }
 
+                } else {
+                    auto *commonFrame = new CommonFrame(p_message);
+                    commonFrameMap[commonFrame->getFileId()][commonFrame->getFrameNumber()] = commonFrame;
+                    if (controlFrameMap.count(commonFrame->getFileId())) {
+                        auto controlFrame = controlFrameMap[commonFrame->getFileId()];
+                        if (controlFrame->getCommonFrameAmount() <= commonFrameMap[commonFrame->getFileId()].size()) {
+                            char *output_filename = new char[ControlFrame::ADDITIONAL_MEMBER_SIZE + 1];
+                            strncpy(output_filename,
+                                    reinterpret_cast<const char *>(controlFrame->getData() +
+                                                                   ControlFrame::ADDITIONAL_MEMBER_SIZE),
+                                    controlFrame->getDataSize() - ControlFrame::ADDITIONAL_MEMBER_SIZE);
+                            output_filename[controlFrame->getDataSize() - ControlFrame::ADDITIONAL_MEMBER_SIZE] = '\0';
+
+                            writeToFile(output_filename, commonFrameMap[commonFrame->getFileId()]);
+                            commonFrameMap.erase(commonFrame->getFileId());
+
+                        }
                     }
                 }
-            }
+            };
+
+            handler();
+
+
+
+
         }
 
         this->closeConnection();

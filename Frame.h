@@ -6,7 +6,7 @@
 class Frame { // NOLINT(cppcoreguidelines-pro-type-member-init)
 protected:
     unsigned char *mp_data; // contains all data for transferring
-    unsigned int mp_data_size; // size with service data. example: frame_number, single_frame_len
+    unsigned int m_data_size; // size with service data. example: frame_number, single_frame_len
     unsigned long long file_id;
 
 
@@ -36,7 +36,7 @@ protected:
         }
     }
 
-    static unsigned int getULongLong(const unsigned char *p_source) {
+    static unsigned long long getULongLong(const unsigned char *p_source) {
         unsigned long long out = 0;
 
         for (int i = 0; i < 7; ++i) {
@@ -50,11 +50,11 @@ protected:
 
 public:
     //! on adding new member change it
-    static const int FRAME_ADDITIONAL_MEMBER_SIZE = sizeof(file_id) + sizeof(mp_data_size);
+    static const int FRAME_ADDITIONAL_MEMBER_SIZE = sizeof(file_id) + sizeof(m_data_size);
 
 
-    Frame(unsigned char *mpData, unsigned int mpDataSize, unsigned long long int fileId) :
-            mp_data(mpData), mp_data_size(mpDataSize), file_id(fileId) {}
+    Frame(unsigned char *Data, unsigned int DataSize, unsigned long long int fileId) :
+            mp_data(Data), m_data_size(DataSize), file_id(fileId) {}
 
     static bool isControlFrame(unsigned char *data) {
         return getUInt(data + 0) == 0;
@@ -67,7 +67,7 @@ public:
 
 
     [[nodiscard]] unsigned int getDataSize() const {
-        return mp_data_size;
+        return m_data_size;
     }
 
     [[nodiscard]] unsigned long long int getFileId() const {

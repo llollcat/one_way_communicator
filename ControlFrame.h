@@ -10,6 +10,8 @@ private:
 
 
 public:
+
+    //todo сделать автоподсчёт
     //! on adding new member change it
     static const int ADDITIONAL_MEMBER_SIZE =
             FRAME_ADDITIONAL_MEMBER_SIZE + sizeof(unsigned int) + sizeof(m_common_frame_amount);
@@ -23,7 +25,7 @@ public:
 
         this->m_common_frame_amount = t_common_frame_amount;
         insertUInt(0, this->mp_data + 0);
-        insertUInt(this->mp_data_size, this->mp_data + 4);
+        insertUInt(this->m_data_size, this->mp_data + 4);
         insertUInt(this->m_common_frame_amount, this->mp_data + 8);
         insertULongLong(t_file_id, this->mp_data + 12);
         memcpy(this->mp_data + ADDITIONAL_MEMBER_SIZE, p_filename, t_filename_size);
@@ -37,7 +39,7 @@ public:
 
         this->m_common_frame_amount = getUInt(data + 8);
 
-        memcpy(this->mp_data, data, this->mp_data_size);
+        memcpy(this->mp_data, data, this->m_data_size);
     }
 
 
