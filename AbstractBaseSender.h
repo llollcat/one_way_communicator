@@ -18,9 +18,9 @@ protected:
 
     virtual void init() = 0;
 
-    virtual void send(unsigned char *p_message, unsigned int buffer_size) = 0;
+    virtual void send(unsigned char *p_message, int buffer_size) = 0;
 
-    virtual void sendData(unsigned char *p_data, unsigned int size) {
+    virtual void sendData(unsigned char *p_data, int size) {
         if (!m_is_init) {
             init();
             m_is_init = true;
@@ -46,7 +46,6 @@ public:
         std::ifstream in_file(filename_path, std::ios::binary | std::ios::ate);
         if (!in_file.is_open()) {
             std::cerr << "failed to open ";
-            return;
         }
 
         int file_size = in_file.tellg();
@@ -69,7 +68,7 @@ public:
                 commonFrame = new CommonFrame(frame_count, t_file_id, message, m_file_frame_size);
             }
             if (!m_is_high_speed) {
-              //  std::cout << frame_count << std::endl;
+                std::cout << frame_count << std::endl;
             }
 
 
@@ -78,7 +77,7 @@ public:
         }
 
         std::cout << "Done." << std::endl;
-        in_file.close();
+
         delete[] message;
     };
 };

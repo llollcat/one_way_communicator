@@ -16,7 +16,6 @@ private:
 
     void init() override {
         // initialise winsock
-
         WSADATA ws;
         std::cout << "Initialising Winsock..." << std::endl;
         if (WSAStartup(MAKEWORD(2, 2), &ws) != 0) {
@@ -32,7 +31,6 @@ private:
                    sizeof(opt_value_true));
         setsockopt(client_socket, IPPROTO_UDP, UDP_NOCHECKSUM, (const char *) &opt_value_false,
                    sizeof(opt_value_false));
-
         LINGER linger;
         linger.l_onoff = 2;
         setsockopt(client_socket, IPPROTO_UDP, SO_LINGER, (const char *) &linger, sizeof(linger));
@@ -48,7 +46,7 @@ private:
     }
 
 
-    void send(unsigned char *message, unsigned int message_size) override {
+    void send(unsigned char *message, int message_size) override {
         if (sendto(this->client_socket, reinterpret_cast<char *>(message), message_size, 0,
                    (sockaddr *) &this->server, sizeof(sockaddr_in)) == SOCKET_ERROR) {
             throw std::runtime_error("Failed. Error Code: " + std::to_string(WSAGetLastError()));
