@@ -23,13 +23,12 @@ public:
     }
 
     [[nodiscard]]  std::string getCmdOption(const std::string &option) const {
+        std::string r;
         auto itr = std::find(this->m_tokensVector.begin(), this->m_tokensVector.end(), option);
         if (itr != this->m_tokensVector.end() && ++itr != this->m_tokensVector.end()) {
-            return (*itr);
+            r = *itr;
         }
-
-        static std::string empty_string;
-        return empty_string;
+        return r;
     }
 
     // if option does not exist out error

@@ -11,10 +11,11 @@
 
 class Sender : public AbstractBaseSender {
 private:
-    SOCKET client_socket{};
+    SOCKET client_socket = INVALID_SOCKET;
     sockaddr_in server{};
 
     void init() override {
+
         // initialise winsock
         WSADATA ws;
         std::cout << "Initialising Winsock..." << std::endl;
@@ -31,9 +32,7 @@ private:
                    sizeof(opt_value_true));
         setsockopt(client_socket, IPPROTO_UDP, UDP_NOCHECKSUM, (const char *) &opt_value_false,
                    sizeof(opt_value_false));
-        LINGER linger;
-        linger.l_onoff = 2;
-        setsockopt(client_socket, IPPROTO_UDP, SO_LINGER, (const char *) &linger, sizeof(linger));
+
 
 
         std::cout << "Socket created." << std::endl;
@@ -42,13 +41,14 @@ private:
         // setup address structure
         this->server.sin_family = AF_INET;
         this->server.sin_port = htons(m_port);
-        this->server.sin_addr.s_addr = inet_addr(mp_server);
+        this->server.sin_addr.s_addr = inet_addr(this->mp_server_address);
+
     }
 
 
     void send(unsigned char *message, int message_size) override {
         if (sendto(this->client_socket, reinterpret_cast<char *>(message), message_size, 0,
-                   (sockaddr *) &this->server, sizeof(sockaddr_in)) == SOCKET_ERROR) {
+                   (SOCKADDR *) &this->server, sizeof(this->server)) == SOCKET_ERROR) {
             throw std::runtime_error("Failed. Error Code: " + std::to_string(WSAGetLastError()));
         }
     }

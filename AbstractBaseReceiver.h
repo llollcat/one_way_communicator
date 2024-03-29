@@ -50,8 +50,12 @@ public:
         std::map<unsigned int, ControlFrame *> controlFrameMap;
         std::map<unsigned int, std::map<unsigned int, CommonFrame *>> commonFrameMap;
         std::cout << "Receiving started" << std::endl;
+
+        int i =0;
         while (this->m_is_working) {
+
             this->receive(p_message, this->m_frame_full_size);
+            i++;
 
 
             if (Frame::isControlFrame(p_message)) {
@@ -89,6 +93,8 @@ public:
                     }
                 }
             }
+
+            std::cout <<i << '\n';
         }
 
         this->closeConnection();

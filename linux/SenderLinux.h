@@ -26,7 +26,7 @@ private:
         // Filling server information
         m_servaddr.sin_family = AF_INET;
         m_servaddr.sin_port = htons(m_port);
-        m_servaddr.sin_addr.s_addr = inet_addr(mp_server);
+        m_servaddr.sin_addr.s_addr = inet_addr(mp_server_address);
 
     }
 

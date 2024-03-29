@@ -34,7 +34,8 @@ int main(int argc, char *argv[]) {
         return 0;
     }
 
-    auto server = input.getCmdOptionSafely("-server").c_str();
+    auto server = input.getCmdOptionSafely("-server");
+
     int port = stoi(input.getCmdOptionIfGiven("-port", D_PORT));
     int file_frame_size = stoi(input.getCmdOptionIfGiven("-file-frame-size", D_FILE_FRAME_SIZE))
                           - 32 - CommonFrame::COMMON_FRAME_ADDITIONAL_MEMBER_SIZE;
@@ -46,7 +47,7 @@ int main(int argc, char *argv[]) {
     }
 
 
-    Sender sender = Sender(server, port, file_frame_size, is_high_speed);
+    Sender sender = Sender(server.c_str(), port, file_frame_size, is_high_speed);
 
     shutdown_handler = [&sender](int signal) -> void {
         sender.stopReceivingSignal();
@@ -56,8 +57,8 @@ int main(int argc, char *argv[]) {
 
 
     if (input.isCmdOptionExists("-file")) {
-        const char *filename = input.getCmdOption("-file").c_str();
-        sender.sendFile(0ull, filename, filename);
+        std::string filename = input.getCmdOption("-file");
+        sender.sendFile(0ull, filename.c_str(), filename.c_str());
 
     } else {
         std::string path = input.getCmdOptionSafely("-dir");

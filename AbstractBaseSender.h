@@ -9,7 +9,7 @@
 
 class AbstractBaseSender {
 protected:
-    const char *mp_server;
+    const char *mp_server_address;
     unsigned int m_port;
     bool m_is_init = false;
     bool m_is_working = true;
@@ -32,18 +32,18 @@ protected:
 
 public:
     AbstractBaseSender(const char *p_server, unsigned int port, int file_frame_size, bool is_high_speed) :
-            mp_server(p_server), m_port(port), m_is_high_speed(is_high_speed), m_file_frame_size(file_frame_size) {}
+            mp_server_address(p_server), m_port(port), m_is_high_speed(is_high_speed), m_file_frame_size(file_frame_size) {}
 
 
     virtual void stopReceivingSignal() {
         this->m_is_working = false;
     }
 
-    void sendFile(unsigned long long t_file_id, const char *filename_name, const char *filename_path) {
+    void sendFile(unsigned long long t_file_id, const char *filename_name, const char *file_path) {
         if (!this->m_is_working)
             return;
 
-        std::ifstream in_file(filename_path, std::ios::binary | std::ios::ate);
+        std::ifstream in_file(file_path, std::ios::binary | std::ios::ate);
         if (!in_file.is_open()) {
             std::cerr << "failed to open ";
         }
