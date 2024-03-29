@@ -3,7 +3,7 @@
 #include "Receiver.h"
 #include "ArgumentsGetter.h"
 #include <functional>
-
+#include "FileWriter.h"
 #define D_PORT "8888"
 #define D_FILE_FRAME_SIZE "512"
 
@@ -15,6 +15,9 @@ namespace {
 }
 
 int main(int argc, char *argv[]) {
+
+
+
     ArgumentsGetter input(argc, argv);
 
     if (input.isCmdOptionExists("-h")) {
